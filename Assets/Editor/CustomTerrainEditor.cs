@@ -34,7 +34,7 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Label("Set Heights Between Random Values", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(randomHeightRange);
-            if (GUILayout.Button("Random Heights"))
+            if (GUILayout.Button("Randomize Heights"))
             {
                 terrain.RandomTerrain();
             }
