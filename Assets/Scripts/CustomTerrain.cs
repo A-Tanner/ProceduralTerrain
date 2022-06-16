@@ -7,13 +7,27 @@ using UnityEngine;
 public class CustomTerrain : MonoBehaviour
 {
     public Vector2 randomHeightRange = new Vector2(0, 0.1f);
+    public Terrain terrain;
+    public TerrainData terrainData;
 
+    public void ResetTerrain()
+    {
+       float[,] heightMap = new float[terrainData.heightmapResolution, terrainData.heightmapResolution];
+        terrainData.SetHeights(0,0,heightMap);
+    }
     public void RandomTerrain()
     {
+        float[,] heightMap = new float[terrainData.heightmapResolution, terrainData.heightmapResolution];
+        for(int i = 0; i < heightMap.GetLength(0); i++)
+        {
+            for (int j = 0; j < heightMap.GetLength(1); j++)
+                heightMap[i, j] = Random.Range(randomHeightRange.x, randomHeightRange.y);
+        }
 
+        terrainData.SetHeights(0,0,heightMap);
     }
 
-    private void Awake()
+    public void Awake()
     {
         SerializedObject tagManager = new SerializedObject
             (AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
@@ -25,6 +39,13 @@ public class CustomTerrain : MonoBehaviour
         tagManager.ApplyModifiedProperties();
 
         this.gameObject.tag = "Terrain";
+    }
+
+    private void OnEnable()
+    {
+        terrain = this.GetComponent<Terrain>();
+        terrainData = Terrain.activeTerrain.terrainData;
+
     }
 
     void AddTag(SerializedProperty tagsProp, string newTag)

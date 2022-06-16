@@ -27,6 +27,9 @@ public class CustomTerrainEditor : Editor
         //Should use serialized values between the editor and target
         //This allows user input to stay live in the inspector
         //Even after script changes
+        GUILayout.Label("Reset Terrain", EditorStyles.boldLabel);
+        if (GUILayout.Button("Reset Terrain")) 
+            terrain.ResetTerrain();
 
         showRandom = EditorGUILayout.Foldout(showRandom, "Random");
         if (showRandom)
