@@ -7,9 +7,9 @@ using UnityEngine;
 [CanEditMultipleObjects]
 public class CustomTerrainEditor : Editor
 {
-
-    //Properties
+    //Properties that get pulled off of the script being edited
     SerializedProperty randomHeightRange;
+    SerializedProperty additive;
 
     //Fold outs
     bool showRandom = false;
@@ -17,6 +17,7 @@ public class CustomTerrainEditor : Editor
     void OnEnable() //Essentially Awake. Allows processing without rerun
     {
         randomHeightRange = serializedObject.FindProperty("randomHeightRange");
+        additive = serializedObject.FindProperty("additive");
         
     }
 
@@ -27,21 +28,36 @@ public class CustomTerrainEditor : Editor
         //Should use serialized values between the editor and target
         //This allows user input to stay live in the inspector
         //Even after script changes
-        GUILayout.Label("Reset Terrain", EditorStyles.boldLabel);
-        if (GUILayout.Button("Reset Terrain")) 
-            terrain.ResetTerrain();
 
+        #region options
+        GUILayout.Label("Generation Options", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(additive);
+        #endregion
+
+        #region generation
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        GUILayout.Label("Generation Methods", EditorStyles.boldLabel);
+        #region random
         showRandom = EditorGUILayout.Foldout(showRandom, "Random");
         if (showRandom)
         {
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            GUILayout.Label("Set Heights Between Random Values", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(randomHeightRange);
+            //GUILayout.Label("Additive", EditorStyles.boldLabel);
+
+            
+
             if (GUILayout.Button("Randomize Heights"))
             {
                 terrain.RandomTerrain();
             }
         }
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+        if (GUILayout.Button("Reset Terrain"))
+            terrain.ResetTerrain();
+        #endregion
+        //TODO add more generation methods
+        #endregion
 
 
         serializedObject.ApplyModifiedProperties();
