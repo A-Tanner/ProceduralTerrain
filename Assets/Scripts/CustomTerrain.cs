@@ -39,9 +39,29 @@ public class CustomTerrain : MonoBehaviour
         {
             for (int j =0; j < terrainData.heightmapResolution; j++)
             {
-                int xPixel =  i *(int)heightMapScale.x;
-                int yPixel =  j *(int)heightMapScale.z;
-                heightMap[i, j] = heightMapImage.GetPixel(xPixel, yPixel).grayscale * heightMapScale.y;
+                int xPixel =  (int)(i *heightMapScale.x);
+                int yPixel =  (int)(j *heightMapScale.z);
+                heightMap[i, j] = heightMap[i, j] + heightMapImage.GetPixel(xPixel, yPixel).grayscale * heightMapScale.y;
+            }
+        }
+
+        terrainData.SetHeights(0, 0, heightMap);
+    }
+
+    public void TerrainFromImage(float xTiles, float zTiles)
+    {
+        float[,] heightMap = GetInitialHeights();
+
+        heightMapScale.x = ((float)heightMapImage.width / ((float)terrainData.heightmapResolution)*xTiles);
+        heightMapScale.z = ((float)heightMapImage.height / ((float)terrainData.heightmapResolution)*zTiles);
+
+        for (int i = 0; i < terrainData.heightmapResolution; i++)
+        {
+            for (int j = 0; j < terrainData.heightmapResolution; j++)
+            {
+                int xPixel = (int)(i * heightMapScale.x);
+                int yPixel = (int)(j * heightMapScale.z);
+                heightMap[i, j] = heightMap[i,j] +heightMapImage.GetPixel(xPixel, yPixel).grayscale * heightMapScale.y;
             }
         }
 

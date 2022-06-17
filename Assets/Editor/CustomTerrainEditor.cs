@@ -8,14 +8,21 @@ using UnityEngine;
 public class CustomTerrainEditor : Editor
 {
     //Properties that get pulled off of the script being edited
-    SerializedProperty randomHeightRange;
     SerializedProperty additive;
+
+    SerializedProperty randomHeightRange;
+
     SerializedProperty heightMapImage;
     SerializedProperty heightMapScale;
 
     //Fold outs
     bool showRandom = false;
     bool showImage = false;
+
+    //Editor fields
+    bool heightMapAutoScale = false;
+    float heightMapXTiles = 0;
+    float heightMapZTiles = 0;
 
     void OnEnable() //Essentially Awake. Allows processing without rerun
     {
@@ -61,17 +68,44 @@ public class CustomTerrainEditor : Editor
         showImage = EditorGUILayout.Foldout(showImage, "From Image");
         if (showImage)
         {
+            EditorGUILayout.HelpBox("Ensure your texture has option Non-Power of 2 set to None and Read/Write enabled in the import settings!" +
+                " These can be accessed by clicking on the texture asset you'd like to use and changing them in the inspector window",MessageType.Info,true);
             EditorGUILayout.PropertyField(heightMapImage);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("Auto-scale image");
+            heightMapAutoScale = EditorGUILayout.Toggle(heightMapAutoScale);
+            EditorGUILayout.EndHorizontal();
+            if (heightMapAutoScale)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PrefixLabel("Horizontal tiles");
+                heightMapXTiles = EditorGUILayout.FloatField(heightMapXTiles);
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PrefixLabel("Vertical tiles");
+                heightMapZTiles = EditorGUILayout.FloatField(heightMapZTiles);
+                EditorGUILayout.EndHorizontal();
+             
+            }
+
+
             GUILayout.Label("X and Z influence how the image is scaled");
             GUILayout.Label("Y is the strength");
+
+            EditorGUI.BeginDisabledGroup(heightMapAutoScale);
             EditorGUILayout.PropertyField(heightMapScale);
+            EditorGUI.EndDisabledGroup();
             //GUILayout.Label("Additive", EditorStyles.boldLabel);
 
 
 
             if (GUILayout.Button("Generate Geometry From Image"))
             {
-                terrain.TerrainFromImage();
+                if (heightMapAutoScale)
+                    terrain.TerrainFromImage(heightMapXTiles, heightMapZTiles);
+                else
+                    terrain.TerrainFromImage();
             }
         }
         #endregion
