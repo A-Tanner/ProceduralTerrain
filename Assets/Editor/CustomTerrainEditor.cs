@@ -10,14 +10,19 @@ public class CustomTerrainEditor : Editor
     //Properties that get pulled off of the script being edited
     SerializedProperty randomHeightRange;
     SerializedProperty additive;
+    SerializedProperty heightMapImage;
+    SerializedProperty heightMapScale;
 
     //Fold outs
     bool showRandom = false;
+    bool showImage = false;
 
     void OnEnable() //Essentially Awake. Allows processing without rerun
     {
         randomHeightRange = serializedObject.FindProperty("randomHeightRange");
         additive = serializedObject.FindProperty("additive");
+        heightMapImage = serializedObject.FindProperty("heightMapImage");
+        heightMapScale = serializedObject.FindProperty("heightMapScale");
         
     }
 
@@ -51,13 +56,32 @@ public class CustomTerrainEditor : Editor
                 terrain.RandomTerrain();
             }
         }
+        #endregion
+        #region texture
+        showImage = EditorGUILayout.Foldout(showImage, "From Image");
+        if (showImage)
+        {
+            EditorGUILayout.PropertyField(heightMapImage);
+            GUILayout.Label("X and Z influence how the image is scaled");
+            GUILayout.Label("Y is the strength");
+            EditorGUILayout.PropertyField(heightMapScale);
+            //GUILayout.Label("Additive", EditorStyles.boldLabel);
+
+
+
+            if (GUILayout.Button("Generate Geometry From Image"))
+            {
+                terrain.TerrainFromImage();
+            }
+        }
+        #endregion
+        //TODO add more generation methods
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        #endregion
 
         if (GUILayout.Button("Reset Terrain"))
             terrain.ResetTerrain();
-        #endregion
-        //TODO add more generation methods
-        #endregion
+
 
 
         serializedObject.ApplyModifiedProperties();
