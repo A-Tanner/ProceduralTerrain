@@ -15,14 +15,20 @@ public class CustomTerrainEditor : Editor
     SerializedProperty heightMapImage;
     SerializedProperty heightMapScale;
 
+    SerializedProperty perlinXScale;
+    SerializedProperty perlinYScale;
+
     //Fold outs
     bool showRandom = false;
     bool showImage = false;
+    bool showPerlin = false;
 
     //Editor fields
+    //Terrain from image
     bool heightMapAutoScale = false;
     float heightMapXTiles = 0;
     float heightMapZTiles = 0;
+    float strength = 0.1f;
 
     void OnEnable() //Essentially Awake. Allows processing without rerun
     {
@@ -30,6 +36,8 @@ public class CustomTerrainEditor : Editor
         additive = serializedObject.FindProperty("additive");
         heightMapImage = serializedObject.FindProperty("heightMapImage");
         heightMapScale = serializedObject.FindProperty("heightMapScale");
+        perlinXScale = serializedObject.FindProperty("perlinXScale");
+        perlinYScale = serializedObject.FindProperty("perlinYScale");
         
     }
 
@@ -41,15 +49,15 @@ public class CustomTerrainEditor : Editor
         //This allows user input to stay live in the inspector
         //Even after script changes
 
-        #region options
+        #region Options
         GUILayout.Label("Generation Options", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(additive);
         #endregion
 
-        #region generation
+        #region Generation
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         GUILayout.Label("Generation Methods", EditorStyles.boldLabel);
-        #region random
+        #region Random
         showRandom = EditorGUILayout.Foldout(showRandom, "Random");
         if (showRandom)
         {
@@ -64,7 +72,7 @@ public class CustomTerrainEditor : Editor
             }
         }
         #endregion
-        #region texture
+        #region Texture
         showImage = EditorGUILayout.Foldout(showImage, "From Image");
         if (showImage)
         {
@@ -86,6 +94,11 @@ public class CustomTerrainEditor : Editor
                 EditorGUILayout.PrefixLabel("Vertical tiles");
                 heightMapZTiles = EditorGUILayout.FloatField(heightMapZTiles);
                 EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PrefixLabel("Strength");
+                strength = EditorGUILayout.FloatField(strength);
+                EditorGUILayout.EndHorizontal();
              
             }
 
@@ -103,10 +116,24 @@ public class CustomTerrainEditor : Editor
             if (GUILayout.Button("Generate Geometry From Image"))
             {
                 if (heightMapAutoScale)
-                    terrain.TerrainFromImage(heightMapXTiles, heightMapZTiles);
+                    terrain.TerrainFromImage(heightMapXTiles, heightMapZTiles, strength);
                 else
                     terrain.TerrainFromImage();
             }
+        }
+        #endregion
+        #region Perlin
+        showPerlin = EditorGUILayout.Foldout(showPerlin, "Perlin");
+        if (showPerlin)
+        {
+            EditorGUILayout.Slider(perlinXScale, 0, 0.01f, new GUIContent("X Scale"));
+            EditorGUILayout.Slider(perlinYScale, 0, 0.01f, new GUIContent("Y Scale"));
+
+            if (GUILayout.Button("Apply Noise"))
+            {
+                terrain.TerrainFromPerlin();
+            }
+            
         }
         #endregion
         //TODO add more generation methods
