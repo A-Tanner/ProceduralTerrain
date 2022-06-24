@@ -17,6 +17,8 @@ public class CustomTerrainEditor : Editor
 
     SerializedProperty perlinXScale;
     SerializedProperty perlinYScale;
+    SerializedProperty perlinXOffset;
+    SerializedProperty perlinYOffset;
 
     //Fold outs
     bool showRandom = false;
@@ -38,6 +40,8 @@ public class CustomTerrainEditor : Editor
         heightMapScale = serializedObject.FindProperty("heightMapScale");
         perlinXScale = serializedObject.FindProperty("perlinXScale");
         perlinYScale = serializedObject.FindProperty("perlinYScale");
+        perlinXOffset = serializedObject.FindProperty("perlinXOffset");
+        perlinYOffset = serializedObject.FindProperty("perlinYOffset");
         
     }
 
@@ -128,6 +132,8 @@ public class CustomTerrainEditor : Editor
         {
             EditorGUILayout.Slider(perlinXScale, 0, 0.01f, new GUIContent("X Scale"));
             EditorGUILayout.Slider(perlinYScale, 0, 0.01f, new GUIContent("Y Scale"));
+            EditorGUILayout.IntSlider(perlinXOffset, 0, 4096, new GUIContent("X Offset"));
+            EditorGUILayout.IntSlider(perlinYOffset, 0, 4096, new GUIContent("Y Offset"));
 
             if (GUILayout.Button("Apply Noise"))
             {
