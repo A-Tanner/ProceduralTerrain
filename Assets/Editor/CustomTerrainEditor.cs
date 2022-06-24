@@ -19,6 +19,9 @@ public class CustomTerrainEditor : Editor
     SerializedProperty perlinYScale;
     SerializedProperty perlinXOffset;
     SerializedProperty perlinYOffset;
+    SerializedProperty perlinOctaves;
+    SerializedProperty perlinPersistance;
+    SerializedProperty perlinHeightScale;
 
     //Fold outs
     bool showRandom = false;
@@ -36,13 +39,18 @@ public class CustomTerrainEditor : Editor
     {
         randomHeightRange = serializedObject.FindProperty("randomHeightRange");
         additive = serializedObject.FindProperty("additive");
+
         heightMapImage = serializedObject.FindProperty("heightMapImage");
         heightMapScale = serializedObject.FindProperty("heightMapScale");
+
         perlinXScale = serializedObject.FindProperty("perlinXScale");
         perlinYScale = serializedObject.FindProperty("perlinYScale");
         perlinXOffset = serializedObject.FindProperty("perlinXOffset");
         perlinYOffset = serializedObject.FindProperty("perlinYOffset");
-        
+        perlinOctaves = serializedObject.FindProperty("perlinOctaves");
+        perlinPersistance = serializedObject.FindProperty("perlinPersistance");
+        perlinHeightScale = serializedObject.FindProperty("perlinHeightScale");
+
     }
 
     public override void OnInspectorGUI()
@@ -68,7 +76,7 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.PropertyField(randomHeightRange);
             //GUILayout.Label("Additive", EditorStyles.boldLabel);
 
-            
+
 
             if (GUILayout.Button("Randomize Heights"))
             {
@@ -81,7 +89,7 @@ public class CustomTerrainEditor : Editor
         if (showImage)
         {
             EditorGUILayout.HelpBox("Ensure your texture has option Non-Power of 2 set to None and Read/Write enabled in the import settings!" +
-                " These can be accessed by clicking on the texture asset you'd like to use and changing them in the inspector window",MessageType.Info,true);
+                " These can be accessed by clicking on the texture asset you'd like to use and changing them in the inspector window", MessageType.Info, true);
             EditorGUILayout.PropertyField(heightMapImage);
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PrefixLabel("Auto-scale image");
@@ -98,12 +106,12 @@ public class CustomTerrainEditor : Editor
                 EditorGUILayout.PrefixLabel("Vertical tiles");
                 heightMapZTiles = EditorGUILayout.FloatField(heightMapZTiles);
                 EditorGUILayout.EndHorizontal();
-                
+
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel("Strength");
                 strength = EditorGUILayout.FloatField(strength);
                 EditorGUILayout.EndHorizontal();
-             
+
             }
 
 
@@ -134,12 +142,14 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.Slider(perlinYScale, 0, 0.01f, new GUIContent("Y Scale"));
             EditorGUILayout.IntSlider(perlinXOffset, 0, 4096, new GUIContent("X Offset"));
             EditorGUILayout.IntSlider(perlinYOffset, 0, 4096, new GUIContent("Y Offset"));
-
+            EditorGUILayout.IntSlider(perlinOctaves, 1, 10, new GUIContent("Octaves"));
+            EditorGUILayout.Slider(perlinPersistance, 1, 10, new GUIContent("Persistance"));
+            EditorGUILayout.Slider(perlinHeightScale, 0, 1, new GUIContent("Height Scale"));
             if (GUILayout.Button("Apply Noise"))
             {
                 terrain.TerrainFromPerlin();
             }
-            
+
         }
         #endregion
         //TODO add more generation methods
@@ -157,6 +167,6 @@ public class CustomTerrainEditor : Editor
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
