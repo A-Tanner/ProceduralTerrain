@@ -15,13 +15,9 @@ public class CustomTerrain : MonoBehaviour
     public Texture2D heightMapImage;
     public Vector3 heightMapScale = new Vector3(1.0f, 1.0f, 1.0f);
     //Perlin noise
-    public float perlinXScale = 0.001f;
-    public float perlinYScale = 0.001f;
-    public int perlinXOffset = 0;
-    public int perlinYOffset = 0;
-    public int perlinOctaves = 3;
-    public float perlinPersistance = 8;
-    public float perlinHeightScale = 0.09f;
+    public List<PerlinParameters> perlinParameters = new List<PerlinParameters>() {
+        new PerlinParameters()
+    };
 
     public void ResetTerrain()
     {
@@ -33,7 +29,7 @@ public class CustomTerrain : MonoBehaviour
     public void RandomTerrain()
     {
         float[,] heightMap = GetInitialHeights();
-        
+
 
         for (int i = 0; i < heightMap.GetLength(0); i++)
         {
@@ -45,15 +41,16 @@ public class CustomTerrain : MonoBehaviour
     }
     #endregion
     #region FromImage
-    public void TerrainFromImage() {
+    public void TerrainFromImage()
+    {
         float[,] heightMap = GetInitialHeights();
 
         for (int i = 0; i < terrainData.heightmapResolution; i++)
         {
-            for (int j =0; j < terrainData.heightmapResolution; j++)
+            for (int j = 0; j < terrainData.heightmapResolution; j++)
             {
-                int xPixel =  (int)(i *heightMapScale.x);
-                int yPixel =  (int)(j *heightMapScale.z);
+                int xPixel = (int)(i * heightMapScale.x);
+                int yPixel = (int)(j * heightMapScale.z);
                 heightMap[i, j] += heightMapImage.GetPixel(xPixel, yPixel).grayscale * heightMapScale.y;
             }
         }
@@ -65,8 +62,8 @@ public class CustomTerrain : MonoBehaviour
     {
         float[,] heightMap = GetInitialHeights();
         heightMapScale.y = strength;
-        heightMapScale.x = ((float)heightMapImage.width / ((float)terrainData.heightmapResolution)*xTiles);
-        heightMapScale.z = ((float)heightMapImage.height / ((float)terrainData.heightmapResolution)*zTiles);
+        heightMapScale.x = ((float)heightMapImage.width / ((float)terrainData.heightmapResolution) * xTiles);
+        heightMapScale.z = ((float)heightMapImage.height / ((float)terrainData.heightmapResolution) * zTiles);
 
         TerrainFromImage();
     }
@@ -75,20 +72,42 @@ public class CustomTerrain : MonoBehaviour
     public void TerrainFromPerlin()
     {
         float[,] heightMap = GetInitialHeights();
-        
-        for (int i = 0; i < terrainData.heightmapResolution; i++)
+
+        foreach (PerlinParameters p in perlinParameters)
         {
-            for (int j = 0; j < terrainData.heightmapResolution; j++)
+            for (int i = 0; i < terrainData.heightmapResolution; i++)
             {
-                heightMap[i, j] += Utils.FractalBrownianMotion(j * perlinXScale,
-                    i * perlinYScale,
-                    perlinOctaves,
-                    perlinPersistance,
-                    perlinXOffset,
-                    perlinYOffset) * perlinHeightScale;
+                for (int j = 0; j < terrainData.heightmapResolution; j++)
+                {
+                    heightMap[i, j] += Utils.FractalBrownianMotion(j, i, p);
+                }
             }
         }
         terrainData.SetHeights(0, 0, heightMap);
+    }
+
+    public void AddPerlin()
+    {
+        perlinParameters.Add(new PerlinParameters());
+    }
+
+    public void RemovePerlin()
+    {
+        List<PerlinParameters> keptPerlinParameters = new List<PerlinParameters>();
+        for (int i = 0; i < perlinParameters.Count; i++)
+        {
+            if (!perlinParameters[i].remove)
+            {
+                keptPerlinParameters.Add(perlinParameters[i]);
+            }
+        }
+
+        perlinParameters = keptPerlinParameters;
+
+        if (perlinParameters.Count == 0)
+        {
+            AddPerlin();
+        }
     }
     #endregion
     public void Awake()
