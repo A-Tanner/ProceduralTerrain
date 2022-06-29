@@ -143,7 +143,7 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.IntSlider(perlinXOffset, 0, 4096, new GUIContent("X Offset"));
             EditorGUILayout.IntSlider(perlinYOffset, 0, 4096, new GUIContent("Y Offset"));
             EditorGUILayout.IntSlider(perlinOctaves, 1, 10, new GUIContent("Octaves"));
-            EditorGUILayout.Slider(perlinPersistance, 1, 10, new GUIContent("Persistance"));
+            EditorGUILayout.Slider(perlinPersistance, 0, 2, new GUIContent("Persistance"));
             EditorGUILayout.Slider(perlinHeightScale, 0, 1, new GUIContent("Height Scale"));
             if (GUILayout.Button("Apply Noise"))
             {
