@@ -27,6 +27,7 @@ public class CustomTerrainEditor : Editor
     bool showRandom = false;
     bool showImage = false;
     bool showPerlin = false;
+    bool showVoronoi = false;
 
     //Editor fields
     //Terrain from image
@@ -150,6 +151,16 @@ public class CustomTerrainEditor : Editor
                 terrain.TerrainFromPerlin();
             }
 
+        }
+        #endregion
+        #region Voronoi
+        showVoronoi = EditorGUILayout.Foldout(showVoronoi, "Voronoi");
+        if (showVoronoi)
+        {
+            if (GUILayout.Button("Random Peak"))
+            {
+                terrain.RandomPeak();
+            }
         }
         #endregion
         //TODO add more generation methods

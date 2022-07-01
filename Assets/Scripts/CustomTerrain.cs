@@ -91,6 +91,19 @@ public class CustomTerrain : MonoBehaviour
         terrainData.SetHeights(0, 0, heightMap);
     }
     #endregion
+    #region Voronoi
+    public void RandomPeak()
+    {
+        float[,] heightMap = GetInitialHeights();
+        int randX = Random.Range(0, terrainData.heightmapResolution);
+        int randY = Random.Range(0, terrainData.heightmapResolution);
+        float randElevation = Random.Range(0.0f, 1.0f);
+
+        heightMap[randX, randY] = randElevation;
+
+        terrainData.SetHeights(0, 0, heightMap);
+    }
+    #endregion
     public void Awake()
     {
         SerializedObject tagManager = new SerializedObject
