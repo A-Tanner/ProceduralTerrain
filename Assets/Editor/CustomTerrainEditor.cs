@@ -25,7 +25,10 @@ public class CustomTerrainEditor : Editor
     //Voronoi
     SerializedProperty voronoiFalloff;
     SerializedProperty voronoiDropoff;
+    SerializedProperty voronoiMinHeight;
     SerializedProperty voronoiMaxHeight;
+    SerializedProperty voronoiNumberPeaks;
+
     //Sine
     SerializedProperty sineFrequency;
     SerializedProperty sineFalloff;
@@ -47,6 +50,9 @@ public class CustomTerrainEditor : Editor
     float heightMapZTiles = 0;
     float strength = 0.1f;
 
+    float tempVoronoiMin = 0.0f;
+    float tempVoronoiMax = 1.0f;
+
     void OnEnable() //Essentially Awake. Allows processing without rerun
     {
         randomHeightRange = serializedObject.FindProperty("randomHeightRange");
@@ -65,7 +71,9 @@ public class CustomTerrainEditor : Editor
 
         voronoiFalloff = serializedObject.FindProperty("voronoiFalloff");
         voronoiDropoff = serializedObject.FindProperty("voronoiDropoff");
+        voronoiMinHeight = serializedObject.FindProperty("voronoiMinHeight");
         voronoiMaxHeight = serializedObject.FindProperty("voronoiMaxHeight");
+        voronoiNumberPeaks = serializedObject.FindProperty("voronoiNumberPeaks");
 
         sineFrequency = serializedObject.FindProperty("sineFrequency");
         sineFalloff = serializedObject.FindProperty("sineFalloff");
@@ -177,12 +185,15 @@ public class CustomTerrainEditor : Editor
         showVoronoi = EditorGUILayout.Foldout(showVoronoi, "Voronoi");
         if (showVoronoi)
         {
-            EditorGUILayout.Slider(voronoiMaxHeight, 0.0f, 1.0f);
+            EditorGUILayout.MinMaxSlider("Height Range",ref tempVoronoiMin, ref tempVoronoiMax, 0.0f, 1.0f);
+            voronoiMinHeight.floatValue = tempVoronoiMin;
+            voronoiMaxHeight.floatValue = tempVoronoiMax;
             EditorGUILayout.Slider(voronoiFalloff, 0.1f, 10.0f);
             EditorGUILayout.Slider(voronoiDropoff, 0.1f, 4.0f);
-            if (GUILayout.Button("Random Peak"))
+            EditorGUILayout.PropertyField(voronoiNumberPeaks);
+            if (GUILayout.Button("Generate Voronoi"))
             {
-                terrain.RandomPeak();
+                terrain.TerrainFromVoronoi();
             }
         }
         #endregion

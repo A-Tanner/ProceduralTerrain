@@ -10,7 +10,7 @@ public class CustomTerrain : MonoBehaviour
     public Terrain terrain;
     public TerrainData terrainData;
     //Random
-    public Vector2 randomHeightRange = new Vector2(0, 0.1f);
+    public Vector2 randomHeightRange = new Vector2(0.0f, 0.1f);
     //From image
     public Texture2D heightMapImage;
     public Vector3 heightMapScale = new Vector3(1.0f, 1.0f, 1.0f);
@@ -20,16 +20,18 @@ public class CustomTerrain : MonoBehaviour
     public int perlinXOffset = 0;
     public int perlinYOffset = 0;
     public int perlinOctaves = 3;
-    public float perlinPersistance = 8;
+    public float perlinPersistance = 8.0f;
     public float perlinHeightScale = 0.09f;
     //Voronoi
-    public float voronoiFalloff = 1f;
-    public float voronoiDropoff = 1f;
-    public float voronoiMaxHeight = 1f;
+    public float voronoiFalloff = 1.0f;
+    public float voronoiDropoff = 1.0f;
+    public float voronoiMinHeight = 0.0f;
+    public float voronoiMaxHeight = 1.0f;
+    public int voronoiNumberPeaks = 1;
     //Sine
-    public bool  sineAllowNegative = true;
+    public bool sineAllowNegative = true;
     public float sineFrequency = 2.0f;
-    public float sineFalloff = 12f;
+    public float sineFalloff = 12.0f;
     public float sineStrength = 0.4f;
     public void ResetTerrain()
     {
@@ -41,7 +43,7 @@ public class CustomTerrain : MonoBehaviour
     public void RandomTerrain()
     {
         float[,] heightMap = GetInitialHeights();
-        
+
 
         for (int i = 0; i < heightMap.GetLength(0); i++)
         {
@@ -53,15 +55,16 @@ public class CustomTerrain : MonoBehaviour
     }
     #endregion
     #region FromImage
-    public void TerrainFromImage() {
+    public void TerrainFromImage()
+    {
         float[,] heightMap = GetInitialHeights();
 
         for (int i = 0; i < terrainData.heightmapResolution; i++)
         {
-            for (int j =0; j < terrainData.heightmapResolution; j++)
+            for (int j = 0; j < terrainData.heightmapResolution; j++)
             {
-                int xPixel =  (int)(i *heightMapScale.x);
-                int yPixel =  (int)(j *heightMapScale.z);
+                int xPixel = (int)(i * heightMapScale.x);
+                int yPixel = (int)(j * heightMapScale.z);
                 heightMap[i, j] += heightMapImage.GetPixel(xPixel, yPixel).grayscale * heightMapScale.y;
             }
         }
@@ -73,8 +76,8 @@ public class CustomTerrain : MonoBehaviour
     {
         float[,] heightMap = GetInitialHeights();
         heightMapScale.y = strength;
-        heightMapScale.x = ((float)heightMapImage.width / ((float)terrainData.heightmapResolution)*xTiles);
-        heightMapScale.z = ((float)heightMapImage.height / ((float)terrainData.heightmapResolution)*zTiles);
+        heightMapScale.x = ((float)heightMapImage.width / ((float)terrainData.heightmapResolution) * xTiles);
+        heightMapScale.z = ((float)heightMapImage.height / ((float)terrainData.heightmapResolution) * zTiles);
 
         TerrainFromImage();
     }
@@ -83,7 +86,7 @@ public class CustomTerrain : MonoBehaviour
     public void TerrainFromPerlin()
     {
         float[,] heightMap = GetInitialHeights();
-        
+
         for (int i = 0; i < terrainData.heightmapResolution; i++)
         {
             for (int j = 0; j < terrainData.heightmapResolution; j++)
@@ -100,34 +103,47 @@ public class CustomTerrain : MonoBehaviour
     }
     #endregion
     #region Voronoi
-    public void RandomPeak()
+
+    public void TerrainFromVoronoi()
     {
+
         float[,] heightMap = GetInitialHeights();
-        int randX = Random.Range(0, terrainData.heightmapResolution);
-        int randY = Random.Range(0, terrainData.heightmapResolution);
-        float randElevation = Random.Range(0.0f, voronoiMaxHeight);
 
-
-
-        heightMap[randX, randY] = randElevation;
-
-        float maxDistance = Vector2.Distance(new Vector2(0, 0), new Vector2(terrainData.heightmapResolution, terrainData.heightmapResolution));
-
-        for (int i = 0; i < terrainData.heightmapResolution; i++)
+        for (int peakNumber = 0; peakNumber < voronoiNumberPeaks; peakNumber++)
         {
-            for (int j = 0; j < terrainData.heightmapResolution; j++)
+
+            //Determine coordinate of new peak
+            int randX = Random.Range(0, terrainData.heightmapResolution);
+            int randY = Random.Range(0, terrainData.heightmapResolution);
+
+            //Determine height of new peak
+            float randElevation = Random.Range(voronoiMinHeight, voronoiMaxHeight);
+
+            float maxDistance = Vector2.Distance(new Vector2(0, 0), new Vector2(terrainData.heightmapResolution, terrainData.heightmapResolution));
+
+
+            //Update all applicable points in the terrain
+            for (int i = 0; i < terrainData.heightmapResolution; i++)
             {
-                if (!(j == randX && i == randY)) //If the given heightmap index is not the peak...
+                for (int j = 0; j < terrainData.heightmapResolution; j++)
                 {
                     float distanceToPeak = Vector2.Distance(new Vector2(randX, randY), new Vector2(j, i));
                     float distanceRatio = distanceToPeak / maxDistance;
-                    heightMap[j, i] += randElevation - (randElevation * Mathf.Pow((distanceRatio * voronoiFalloff), voronoiDropoff));
+                    float height = randElevation - (randElevation * Mathf.Pow((distanceRatio * voronoiFalloff), voronoiDropoff));
+
+                    //Terrain is only updated if a peak generates taller terrain than what currently exists.
+                    //This can have the appearance of not creating the right number of peaks, if a peak is created at the point of a larger peak
+                    if (height > heightMap[j, i]) 
+                        heightMap[j, i] = height;
                 }
             }
         }
 
         terrainData.SetHeights(0, 0, heightMap);
+
+
     }
+
     #endregion
     #region Sine
     public void PropagateSine()
@@ -145,13 +161,13 @@ public class CustomTerrain : MonoBehaviour
             {
 
                 float distanceFromCenter = Vector2.Distance(new Vector2(randX, randY), new Vector2(j, i));
-                float distanceRatio = distanceFromCenter / (maxDistance*sineFalloff);
-                float angle = 2 * Mathf.PI * (distanceFromCenter/maxDistance) * sineFrequency;
+                float distanceRatio = distanceFromCenter / (maxDistance * sineFalloff);
+                float angle = 2 * Mathf.PI * (distanceFromCenter / maxDistance) * sineFrequency;
 
                 if (sineAllowNegative)
                     heightMap[j, i] += Mathf.Sin(angle) * (1 - distanceRatio) * sineStrength;
                 else
-                    heightMap[j, i] += (1+Mathf.Sin(angle))/2 * (1 - distanceRatio) * sineStrength;
+                    heightMap[j, i] += (1 + Mathf.Sin(angle)) / 2 * (1 - distanceRatio) * sineStrength;
 
             }
         }
