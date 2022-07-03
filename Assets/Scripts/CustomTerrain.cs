@@ -22,8 +22,11 @@ public class CustomTerrain : MonoBehaviour
     public int perlinOctaves = 3;
     public float perlinPersistance = 8;
     public float perlinHeightScale = 0.09f;
-
-    //Sine noise
+    //Voronoi
+    public float voronoiFalloff = 1f;
+    public float voronoiDropoff = 1f;
+    public float voronoiMaxHeight = 1f;
+    //Sine
     public bool  sineAllowNegative = true;
     public float sineFrequency = 2.0f;
     public float sineFalloff = 12f;
@@ -102,7 +105,9 @@ public class CustomTerrain : MonoBehaviour
         float[,] heightMap = GetInitialHeights();
         int randX = Random.Range(0, terrainData.heightmapResolution);
         int randY = Random.Range(0, terrainData.heightmapResolution);
-        float randElevation = Random.Range(0.0f, 1.0f);
+        float randElevation = Random.Range(0.0f, voronoiMaxHeight);
+
+
 
         heightMap[randX, randY] = randElevation;
 
@@ -116,7 +121,7 @@ public class CustomTerrain : MonoBehaviour
                 {
                     float distanceToPeak = Vector2.Distance(new Vector2(randX, randY), new Vector2(j, i));
                     float distanceRatio = distanceToPeak / maxDistance;
-                    heightMap[j, i] = randElevation - (randElevation * distanceRatio);
+                    heightMap[j, i] = randElevation - (randElevation * Mathf.Pow((distanceRatio * voronoiFalloff), voronoiDropoff));
                 }
             }
         }

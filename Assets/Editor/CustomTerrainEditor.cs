@@ -9,12 +9,12 @@ public class CustomTerrainEditor : Editor
 {
     //Properties that get pulled off of the script being edited
     SerializedProperty additive;
-
+    //Random
     SerializedProperty randomHeightRange;
-
+    //From Image
     SerializedProperty heightMapImage;
     SerializedProperty heightMapScale;
-
+    //Perlin Noise
     SerializedProperty perlinXScale;
     SerializedProperty perlinYScale;
     SerializedProperty perlinXOffset;
@@ -22,9 +22,11 @@ public class CustomTerrainEditor : Editor
     SerializedProperty perlinOctaves;
     SerializedProperty perlinPersistance;
     SerializedProperty perlinHeightScale;
-
-
-
+    //Voronoi
+    SerializedProperty voronoiFalloff;
+    SerializedProperty voronoiDropoff;
+    SerializedProperty voronoiMaxHeight;
+    //Sine
     SerializedProperty sineFrequency;
     SerializedProperty sineFalloff;
     SerializedProperty sineStrength;
@@ -61,6 +63,9 @@ public class CustomTerrainEditor : Editor
         perlinPersistance = serializedObject.FindProperty("perlinPersistance");
         perlinHeightScale = serializedObject.FindProperty("perlinHeightScale");
 
+        voronoiFalloff = serializedObject.FindProperty("voronoiFalloff");
+        voronoiDropoff = serializedObject.FindProperty("voronoiDropoff");
+        voronoiMaxHeight = serializedObject.FindProperty("voronoiMaxHeight");
 
         sineFrequency = serializedObject.FindProperty("sineFrequency");
         sineFalloff = serializedObject.FindProperty("sineFalloff");
@@ -172,6 +177,9 @@ public class CustomTerrainEditor : Editor
         showVoronoi = EditorGUILayout.Foldout(showVoronoi, "Voronoi");
         if (showVoronoi)
         {
+            EditorGUILayout.Slider(voronoiMaxHeight, 0.0f, 1.0f);
+            EditorGUILayout.Slider(voronoiFalloff, 0.1f, 10.0f);
+            EditorGUILayout.Slider(voronoiDropoff, 0.1f, 4.0f);
             if (GUILayout.Button("Random Peak"))
             {
                 terrain.RandomPeak();
@@ -187,7 +195,7 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.Slider(sineFalloff, 0.0f, 1f);
             EditorGUILayout.Slider(sineStrength, 0.01f, 1f);
 
-            if (GUILayout.Button ("Propagate Wave"))
+            if (GUILayout.Button("Propagate Wave"))
             {
                 terrain.PropagateSine();
             }
