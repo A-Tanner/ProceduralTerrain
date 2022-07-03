@@ -121,7 +121,7 @@ public class CustomTerrain : MonoBehaviour
                 {
                     float distanceToPeak = Vector2.Distance(new Vector2(randX, randY), new Vector2(j, i));
                     float distanceRatio = distanceToPeak / maxDistance;
-                    heightMap[j, i] = randElevation - (randElevation * Mathf.Pow((distanceRatio * voronoiFalloff), voronoiDropoff));
+                    heightMap[j, i] += randElevation - (randElevation * Mathf.Pow((distanceRatio * voronoiFalloff), voronoiDropoff));
                 }
             }
         }
