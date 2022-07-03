@@ -23,6 +23,11 @@ public class CustomTerrain : MonoBehaviour
     public float perlinPersistance = 8;
     public float perlinHeightScale = 0.09f;
 
+    //Sine noise
+    public bool  sineAllowNegative = true;
+    public float sineFrequency = 2.0f;
+    public float sineFalloff = 12f;
+    public float sineStrength = 0.4f;
     public void ResetTerrain()
     {
         float[,] heightMap = new float[terrainData.heightmapResolution, terrainData.heightmapResolution];
@@ -101,6 +106,51 @@ public class CustomTerrain : MonoBehaviour
 
         heightMap[randX, randY] = randElevation;
 
+        float maxDistance = Vector2.Distance(new Vector2(0, 0), new Vector2(terrainData.heightmapResolution, terrainData.heightmapResolution));
+
+        for (int i = 0; i < terrainData.heightmapResolution; i++)
+        {
+            for (int j = 0; j < terrainData.heightmapResolution; j++)
+            {
+                if (!(j == randX && i == randY)) //If the given heightmap index is not the peak...
+                {
+                    float distanceToPeak = Vector2.Distance(new Vector2(randX, randY), new Vector2(j, i));
+                    float distanceRatio = distanceToPeak / maxDistance;
+                    heightMap[j, i] = randElevation - (randElevation * distanceRatio);
+                }
+            }
+        }
+
+        terrainData.SetHeights(0, 0, heightMap);
+    }
+    #endregion
+    #region Sine
+    public void PropagateSine()
+    {
+        float[,] heightMap = GetInitialHeights();
+        int randX = Random.Range(0, terrainData.heightmapResolution);
+        int randY = Random.Range(0, terrainData.heightmapResolution);
+
+
+        float maxDistance = Vector2.Distance(new Vector2(0, 0), new Vector2(terrainData.heightmapResolution, terrainData.heightmapResolution));
+
+        for (int i = 0; i < terrainData.heightmapResolution; i++)
+        {
+            for (int j = 0; j < terrainData.heightmapResolution; j++)
+            {
+
+                float distanceFromCenter = Vector2.Distance(new Vector2(randX, randY), new Vector2(j, i));
+                float distanceRatio = distanceFromCenter / (maxDistance*sineFalloff);
+                float angle = 2 * Mathf.PI * (distanceFromCenter/maxDistance) * sineFrequency;
+
+                if (sineAllowNegative)
+                    heightMap[j, i] += Mathf.Sin(angle) * (1 - distanceRatio) * sineStrength;
+                else
+                    heightMap[j, i] += (1+Mathf.Sin(angle))/2 * (1 - distanceRatio) * sineStrength;
+
+            }
+        }
+
         terrainData.SetHeights(0, 0, heightMap);
     }
     #endregion
@@ -132,7 +182,7 @@ public class CustomTerrain : MonoBehaviour
     private void OnEnable()
     {
         terrain = this.GetComponent<Terrain>();
-        terrainData = Terrain.activeTerrain.terrainData;
+        terrainData = terrain.terrainData;
 
     }
 

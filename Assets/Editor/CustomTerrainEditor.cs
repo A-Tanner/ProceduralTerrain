@@ -23,11 +23,20 @@ public class CustomTerrainEditor : Editor
     SerializedProperty perlinPersistance;
     SerializedProperty perlinHeightScale;
 
+
+
+    SerializedProperty sineFrequency;
+    SerializedProperty sineFalloff;
+    SerializedProperty sineStrength;
+    SerializedProperty sineAllowNegative;
+
+
     //Fold outs
     bool showRandom = false;
     bool showImage = false;
     bool showPerlin = false;
     bool showVoronoi = false;
+    bool showSine = false;
 
     //Editor fields
     //Terrain from image
@@ -51,6 +60,12 @@ public class CustomTerrainEditor : Editor
         perlinOctaves = serializedObject.FindProperty("perlinOctaves");
         perlinPersistance = serializedObject.FindProperty("perlinPersistance");
         perlinHeightScale = serializedObject.FindProperty("perlinHeightScale");
+
+
+        sineFrequency = serializedObject.FindProperty("sineFrequency");
+        sineFalloff = serializedObject.FindProperty("sineFalloff");
+        sineStrength = serializedObject.FindProperty("sineStrength");
+        sineAllowNegative = serializedObject.FindProperty("sineAllowNegative");
 
     }
 
@@ -161,6 +176,22 @@ public class CustomTerrainEditor : Editor
             {
                 terrain.RandomPeak();
             }
+        }
+        #endregion
+        #region Sine
+        showSine = EditorGUILayout.Foldout(showSine, "Sine");
+        if (showSine)
+        {
+            EditorGUILayout.PropertyField(sineAllowNegative, new GUIContent("Allow Negative Values"));
+            EditorGUILayout.Slider(sineFrequency, 0.1f, 100f);
+            EditorGUILayout.Slider(sineFalloff, 0.0f, 1f);
+            EditorGUILayout.Slider(sineStrength, 0.01f, 1f);
+
+            if (GUILayout.Button ("Propagate Wave"))
+            {
+                terrain.PropagateSine();
+            }
+
         }
         #endregion
         //TODO add more generation methods
