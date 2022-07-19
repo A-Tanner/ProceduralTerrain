@@ -23,4 +23,15 @@ public static class Utils
 
         return total / maxValue;
     }
+
+    public static float AverageFloats(params float[] floats)
+    {
+        float sum = 0.0f;
+        for (int i = 0; i < floats.Length; i++)
+        {
+            sum += floats[i];
+        }
+
+        return sum / floats.Length;
+    }
 }

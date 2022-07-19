@@ -35,6 +35,12 @@ public class CustomTerrainEditor : Editor
     SerializedProperty sineStrength;
     SerializedProperty sineAllowNegative;
 
+    //Midpoint Displacement
+    SerializedProperty mpdRoughness;
+    SerializedProperty mpdDisplacementFactor;
+    SerializedProperty mpdUpperBoundsRatio;
+    SerializedProperty mpdLowerBoundsRatio;
+
 
     //Fold outs
     bool showRandom = false;
@@ -42,6 +48,7 @@ public class CustomTerrainEditor : Editor
     bool showPerlin = false;
     bool showVoronoi = false;
     bool showSine = false;
+    bool showMpd = false;
 
     //Editor fields
     //Terrain from image
@@ -79,6 +86,14 @@ public class CustomTerrainEditor : Editor
         sineFalloff = serializedObject.FindProperty("sineFalloff");
         sineStrength = serializedObject.FindProperty("sineStrength");
         sineAllowNegative = serializedObject.FindProperty("sineAllowNegative");
+
+        mpdRoughness = serializedObject.FindProperty("mpdRoughness");
+        mpdDisplacementFactor = serializedObject.FindProperty("mpdDisplacementFactor");
+        mpdUpperBoundsRatio = serializedObject.FindProperty("mpdUpperBoundsRatio");
+        mpdLowerBoundsRatio = serializedObject.FindProperty("mpdLowerBoundsRatio");
+
+
+
 
     }
 
@@ -185,7 +200,7 @@ public class CustomTerrainEditor : Editor
         showVoronoi = EditorGUILayout.Foldout(showVoronoi, "Voronoi");
         if (showVoronoi)
         {
-            EditorGUILayout.MinMaxSlider("Height Range",ref tempVoronoiMin, ref tempVoronoiMax, 0.0f, 1.0f);
+            EditorGUILayout.MinMaxSlider("Height Range", ref tempVoronoiMin, ref tempVoronoiMax, 0.0f, 1.0f);
             voronoiMinHeight.floatValue = tempVoronoiMin;
             voronoiMaxHeight.floatValue = tempVoronoiMax;
             EditorGUILayout.Slider(voronoiFalloff, 0.1f, 10.0f);
@@ -211,6 +226,21 @@ public class CustomTerrainEditor : Editor
                 terrain.PropagateSine();
             }
 
+        }
+        #endregion
+        #region Mpd
+        showMpd = EditorGUILayout.Foldout(showMpd, "Midpoint Displacement");
+        if (showMpd)
+        {
+            EditorGUILayout.Slider(mpdRoughness, 0.5f, 4.0f);
+            EditorGUILayout.Slider(mpdDisplacementFactor, 0.001f, 0.01f);
+            EditorGUILayout.Slider(mpdUpperBoundsRatio, 0.05f, 2.0f);
+            EditorGUILayout.Slider(mpdLowerBoundsRatio, 0.05f, 2.0f);
+
+            if (GUILayout.Button("Run MPD"))
+            {
+                terrain.TerrainFromMpd();
+            }
         }
         #endregion
         //TODO add more generation methods

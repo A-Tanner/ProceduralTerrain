@@ -377,21 +377,26 @@ MonoBehaviour:
   randomHeightRange: {x: 0, y: 0.0025}
   heightMapImage: {fileID: 2800000, guid: fcb5a24c07899d9439b27003b6792283, type: 3}
   heightMapScale: {x: 4, y: 0.1, z: 2}
-  perlinXScale: 0
-  perlinYScale: 0
+  perlinXScale: 0.01
+  perlinYScale: 0.01
   perlinXOffset: 0
-  perlinYOffset: 0
-  perlinOctaves: 6
-  perlinPersistance: 0.57
-  perlinHeightScale: 1
-  voronoiFalloff: 4
-  voronoiDropoff: 0.55
-  voronoiMinHeight: 0.12494752
-  voronoiMaxHeight: 0.83487606
+  perlinYOffset: 358
+  perlinOctaves: 3
+  perlinPersistance: 0.48
+  perlinHeightScale: 0.145
+  voronoiFalloff: 5.69
+  voronoiDropoff: 3.5
+  voronoiMinHeight: 0
+  voronoiMaxHeight: 1
+  voronoiNumberPeaks: 25
   sineAllowNegative: 0
-  sineFrequency: 80
-  sineFalloff: 0.968
-  sineStrength: 0.125
+  sineFrequency: 82
+  sineFalloff: 1
+  sineStrength: 0.15
+  mpdRoughness: 1.2
+  mpdDisplacementFactor: 0.01
+  mpdUpperBoundsRatio: 1
+  mpdLowerBoundsRatio: 1
 --- !u!154 &1153841636
 TerrainCollider:
   m_ObjectHideFlags: 0
