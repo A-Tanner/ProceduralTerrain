@@ -299,8 +299,8 @@ public class CustomTerrain : MonoBehaviour
         additive = true;
 
         float[,] heightMap = GetInitialHeights();
-        int limit = heightMap.GetLength(0)-1;
-
+        int width = heightMap.GetLength(0);
+        int height = heightMap.GetLength(1);
 
         for (int x = 0; x < terrainData.heightmapResolution; x++) //y
         {
@@ -308,75 +308,15 @@ public class CustomTerrain : MonoBehaviour
             {
                 List<float> adjacencies = new();
 
+                Vector2 position = new(Mathf.RoundToInt(x), Mathf.RoundToInt(y));
+
                 adjacencies.Add(heightMap[x, y]);
+
                 //Check adjacencies
-                if (x == 0 && y == 0)// Bottom Left corner
-                {
-                    adjacencies.Add(heightMap[x + 1, y]);
-                    adjacencies.Add(heightMap[x + 1, y + 1]);
-                    adjacencies.Add(heightMap[x, y + 1]);
-                }
-                else if (x > 0 && x < limit && y == 0)//Bottom row, no corners
-                {
-                    adjacencies.Add(heightMap[x - 1, y]);
-                    adjacencies.Add(heightMap[x - 1, y+1]);
-                    adjacencies.Add(heightMap[x, y+1]);
-                    adjacencies.Add(heightMap[x+1, y+1]);
-                    adjacencies.Add(heightMap[x+1, y]);
-                }
-                else if (x == limit && y == 0) //Bottom right corner
-                {
-                    adjacencies.Add(heightMap[x-1, y]);
-                    adjacencies.Add(heightMap[x-1, y+1]);
-                    adjacencies.Add(heightMap[x, y+1]);
-                }
-                else if (x == 0 && y > 0 && y < limit) //Left column, no corners
-                {
-                    adjacencies.Add(heightMap[x, y+1]);
-                    adjacencies.Add(heightMap[x+1, y+1]);
-                    adjacencies.Add(heightMap[x+1, y]);
-                    adjacencies.Add(heightMap[x+1, y-1]);
-                    adjacencies.Add(heightMap[x, y-1]);
-                }
-                else if (x == limit && y > 0 && y < limit) //right column, no corners
-                {
-                    adjacencies.Add(heightMap[x, y+1]);
-                    adjacencies.Add(heightMap[x-1, y+1]);
-                    adjacencies.Add(heightMap[x-1, y]);
-                    adjacencies.Add(heightMap[x-1, y-1]);
-                    adjacencies.Add(heightMap[x, y-1]);
-                }
-                else if (x == 0 && y == limit)//top left corner
-                {
-                    adjacencies.Add(heightMap[x+1, y]);
-                    adjacencies.Add(heightMap[x+1, y-1]);
-                    adjacencies.Add(heightMap[x, y-1]);
-                }
-                else if (x > 0 && x < limit && y ==limit)//top row, no corners
-                {
-                    adjacencies.Add(heightMap[x-1, y]);
-                    adjacencies.Add(heightMap[x-1, y-1]);
-                    adjacencies.Add(heightMap[x, y-1]);
-                    adjacencies.Add(heightMap[x+1, y-1]);
-                    adjacencies.Add(heightMap[x+1, y]);
-                }
-                else if (x == limit && y == limit)//top right corner
-                {
-                    adjacencies.Add(heightMap[x-1, y]);
-                    adjacencies.Add(heightMap[x-1, y-1]);
-                    adjacencies.Add(heightMap[x, y-1]);
-                }
-                else//All adjacencies present
-                {
-                    adjacencies.Add(heightMap[x, y+1]);
-                    adjacencies.Add(heightMap[x+1, y+1]);
-                    adjacencies.Add(heightMap[x+1, y]); 
-                    adjacencies.Add(heightMap[x+1, y-1]);
-                    adjacencies.Add(heightMap[x, y-1]);
-                    adjacencies.Add(heightMap[x-1, y-1]);
-                    adjacencies.Add(heightMap[x-1, y]);
-                    adjacencies.Add(heightMap[x-1, y-1]);
-                }
+                IEnumerable<float> neighbors = Utils.GetValuesAtCoordinates(heightMap,
+                    Utils.GetNeighbors(position, width, height));
+
+                adjacencies.AddRange(neighbors);
 
                 heightMap[x, y] = Utils.AverageFloats(adjacencies);
             }
@@ -421,9 +361,9 @@ public class CustomTerrain : MonoBehaviour
     void AddTag(SerializedProperty tagsProp, string newTag)
     {
         bool found = false;
-        for (int x = 0; x < tagsProp.arraySize; x++)
+        for (int i = 0; i < tagsProp.arraySize; i++)
         {
-            SerializedProperty t = tagsProp.GetArrayElementAtIndex(x);
+            SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
             if (t.stringValue.Equals(newTag)) { found = true; break; }
         }
 
