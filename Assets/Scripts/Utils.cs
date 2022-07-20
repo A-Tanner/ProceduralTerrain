@@ -34,4 +34,19 @@ public static class Utils
 
         return sum / floats.Length;
     }
+
+    public static float AverageFloats(IEnumerable<float> floats)
+    {
+        float sum = 0.0f;
+        int count = 0;
+        foreach(float f in floats)
+        {
+            sum += f;
+            count++;
+        }
+
+        return sum / count;
+
+    }
+
 }

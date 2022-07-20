@@ -50,10 +50,10 @@ public class CustomTerrain : MonoBehaviour
         float[,] heightMap = GetInitialHeights();
 
 
-        for (int i = 0; i < heightMap.GetLength(0); i++)
+        for (int x = 0; x < heightMap.GetLength(0); x++)
         {
-            for (int j = 0; j < heightMap.GetLength(1); j++)
-                heightMap[i, j] += Random.Range(randomHeightRange.x, randomHeightRange.y);
+            for (int y = 0; y < heightMap.GetLength(1); y++)
+                heightMap[x, y] += Random.Range(randomHeightRange.x, randomHeightRange.y);
         }
 
         terrainData.SetHeights(0, 0, heightMap);
@@ -64,13 +64,13 @@ public class CustomTerrain : MonoBehaviour
     {
         float[,] heightMap = GetInitialHeights();
 
-        for (int i = 0; i < terrainData.heightmapResolution; i++)
+        for (int x = 0; x < terrainData.heightmapResolution; x++)
         {
-            for (int j = 0; j < terrainData.heightmapResolution; j++)
+            for (int y = 0; y < terrainData.heightmapResolution; y++)
             {
-                int xPixel = (int)(i * heightMapScale.x);
-                int yPixel = (int)(j * heightMapScale.z);
-                heightMap[i, j] += heightMapImage.GetPixel(xPixel, yPixel).grayscale * heightMapScale.y;
+                int xPixel = (int)(x * heightMapScale.x);
+                int yPixel = (int)(y * heightMapScale.z);
+                heightMap[x, y] += heightMapImage.GetPixel(xPixel, yPixel).grayscale * heightMapScale.y;
             }
         }
 
@@ -92,12 +92,12 @@ public class CustomTerrain : MonoBehaviour
     {
         float[,] heightMap = GetInitialHeights();
 
-        for (int i = 0; i < terrainData.heightmapResolution; i++)
+        for (int x = 0; x < terrainData.heightmapResolution; x++)
         {
-            for (int j = 0; j < terrainData.heightmapResolution; j++)
+            for (int y = 0; y < terrainData.heightmapResolution; y++)
             {
-                heightMap[i, j] += Utils.FractalBrownianMotion(j * perlinXScale,
-                    i * perlinYScale,
+                heightMap[x, y] += Utils.FractalBrownianMotion(y * perlinXScale,
+                    x * perlinYScale,
                     perlinOctaves,
                     perlinPersistance,
                     perlinXOffset,
@@ -128,18 +128,18 @@ public class CustomTerrain : MonoBehaviour
 
 
             //Update all applicable points in the terrain
-            for (int i = 0; i < terrainData.heightmapResolution; i++)
+            for (int x = 0; x < terrainData.heightmapResolution; x++)
             {
-                for (int j = 0; j < terrainData.heightmapResolution; j++)
+                for (int y = 0; y < terrainData.heightmapResolution; y++)
                 {
-                    float distanceToPeak = Vector2.Distance(new Vector2(randX, randY), new Vector2(j, i));
+                    float distanceToPeak = Vector2.Distance(new Vector2(randX, randY), new Vector2(y, x));
                     float distanceRatio = distanceToPeak / maxDistance;
                     float height = randElevation - (randElevation * Mathf.Pow((distanceRatio * voronoiFalloff), voronoiDropoff));
 
                     //Terrain is only updated if a peak generates taller terrain than what currently exists.
                     //This can have the appearance of not creating the right number of peaks, if a peak is created at the point of a larger peak
-                    if (height > heightMap[j, i])
-                        heightMap[j, i] = height;
+                    if (height > heightMap[y, x])
+                        heightMap[y, x] = height;
                 }
             }
         }
@@ -160,19 +160,19 @@ public class CustomTerrain : MonoBehaviour
 
         float maxDistance = Vector2.Distance(new Vector2(0, 0), new Vector2(terrainData.heightmapResolution, terrainData.heightmapResolution));
 
-        for (int i = 0; i < terrainData.heightmapResolution; i++)
+        for (int x = 0; x < terrainData.heightmapResolution; x++)
         {
-            for (int j = 0; j < terrainData.heightmapResolution; j++)
+            for (int y = 0; y < terrainData.heightmapResolution; y++)
             {
 
-                float distanceFromCenter = Vector2.Distance(new Vector2(randX, randY), new Vector2(j, i));
+                float distanceFromCenter = Vector2.Distance(new Vector2(randX, randY), new Vector2(y, x));
                 float distanceRatio = distanceFromCenter / (maxDistance * sineFalloff);
                 float angle = 2 * Mathf.PI * (distanceFromCenter / maxDistance) * sineFrequency;
 
                 if (sineAllowNegative)
-                    heightMap[j, i] += Mathf.Sin(angle) * (1 - distanceRatio) * sineStrength;
+                    heightMap[y, x] += Mathf.Sin(angle) * (1 - distanceRatio) * sineStrength;
                 else
-                    heightMap[j, i] += (1 + Mathf.Sin(angle)) / 2 * (1 - distanceRatio) * sineStrength;
+                    heightMap[y, x] += (1 + Mathf.Sin(angle)) / 2 * (1 - distanceRatio) * sineStrength;
 
             }
         }
@@ -200,19 +200,19 @@ public class CustomTerrain : MonoBehaviour
         { 
             //Iterate across each square at the present resolution (square size)
             //DIAMOND STEP
-            for (int i = 0; i < terrainWidth; i += squareSize)
+            for (int x = 0; x < terrainWidth; x += squareSize)
             {
-                for (int j = 0; j < terrainHeight; j += squareSize)
+                for (int y = 0; y < terrainHeight; y += squareSize)
                 {
-                    DiamondStep(heightMap, squareSize, i, j, randomDisplacement, dampening);
+                    DiamondStep(heightMap, squareSize, x, y, randomDisplacement, dampening);
                 }
             }
             //SQUARE STEP
-            for (int i = 0; i < terrainWidth; i += squareSize)
+            for (int x = 0; x < terrainWidth; x += squareSize)
             {
-                for (int j = 0; j < terrainWidth; j += squareSize)
+                for (int y = 0; y < terrainWidth; y += squareSize)
                 {
-                 SquareStep(heightMap, squareSize, i, j, randomDisplacement, dampening);
+                 SquareStep(heightMap, squareSize, x, y, randomDisplacement, dampening);
                 }
             }
 
@@ -292,6 +292,100 @@ public class CustomTerrain : MonoBehaviour
         heightMap[x,y] = calculatedHeight;
     }
     #endregion
+    #region Smooth
+    public void AdjacencyAverage()
+    {
+        bool additiveCache = additive;
+        additive = true;
+
+        float[,] heightMap = GetInitialHeights();
+        int limit = heightMap.GetLength(0)-1;
+
+
+        for (int x = 0; x < terrainData.heightmapResolution; x++) //y
+        {
+            for(int y = 0; y < terrainData.heightmapResolution; y++)//x
+            {
+                List<float> adjacencies = new();
+
+                adjacencies.Add(heightMap[x, y]);
+                //Check adjacencies
+                if (x == 0 && y == 0)// Bottom Left corner
+                {
+                    adjacencies.Add(heightMap[x + 1, y]);
+                    adjacencies.Add(heightMap[x + 1, y + 1]);
+                    adjacencies.Add(heightMap[x, y + 1]);
+                }
+                else if (x > 0 && x < limit && y == 0)//Bottom row, no corners
+                {
+                    adjacencies.Add(heightMap[x - 1, y]);
+                    adjacencies.Add(heightMap[x - 1, y+1]);
+                    adjacencies.Add(heightMap[x, y+1]);
+                    adjacencies.Add(heightMap[x+1, y+1]);
+                    adjacencies.Add(heightMap[x+1, y]);
+                }
+                else if (x == limit && y == 0) //Bottom right corner
+                {
+                    adjacencies.Add(heightMap[x-1, y]);
+                    adjacencies.Add(heightMap[x-1, y+1]);
+                    adjacencies.Add(heightMap[x, y+1]);
+                }
+                else if (x == 0 && y > 0 && y < limit) //Left column, no corners
+                {
+                    adjacencies.Add(heightMap[x, y+1]);
+                    adjacencies.Add(heightMap[x+1, y+1]);
+                    adjacencies.Add(heightMap[x+1, y]);
+                    adjacencies.Add(heightMap[x+1, y-1]);
+                    adjacencies.Add(heightMap[x, y-1]);
+                }
+                else if (x == limit && y > 0 && y < limit) //right column, no corners
+                {
+                    adjacencies.Add(heightMap[x, y+1]);
+                    adjacencies.Add(heightMap[x-1, y+1]);
+                    adjacencies.Add(heightMap[x-1, y]);
+                    adjacencies.Add(heightMap[x-1, y-1]);
+                    adjacencies.Add(heightMap[x, y-1]);
+                }
+                else if (x == 0 && y == limit)//top left corner
+                {
+                    adjacencies.Add(heightMap[x+1, y]);
+                    adjacencies.Add(heightMap[x+1, y-1]);
+                    adjacencies.Add(heightMap[x, y-1]);
+                }
+                else if (x > 0 && x < limit && y ==limit)//top row, no corners
+                {
+                    adjacencies.Add(heightMap[x-1, y]);
+                    adjacencies.Add(heightMap[x-1, y-1]);
+                    adjacencies.Add(heightMap[x, y-1]);
+                    adjacencies.Add(heightMap[x+1, y-1]);
+                    adjacencies.Add(heightMap[x+1, y]);
+                }
+                else if (x == limit && y == limit)//top right corner
+                {
+                    adjacencies.Add(heightMap[x-1, y]);
+                    adjacencies.Add(heightMap[x-1, y-1]);
+                    adjacencies.Add(heightMap[x, y-1]);
+                }
+                else//All adjacencies present
+                {
+                    adjacencies.Add(heightMap[x, y+1]);
+                    adjacencies.Add(heightMap[x+1, y+1]);
+                    adjacencies.Add(heightMap[x+1, y]); 
+                    adjacencies.Add(heightMap[x+1, y-1]);
+                    adjacencies.Add(heightMap[x, y-1]);
+                    adjacencies.Add(heightMap[x-1, y-1]);
+                    adjacencies.Add(heightMap[x-1, y]);
+                    adjacencies.Add(heightMap[x-1, y-1]);
+                }
+
+                heightMap[x, y] = Utils.AverageFloats(adjacencies);
+            }
+        }
+
+        terrainData.SetHeights(0, 0, heightMap);
+        additive = additiveCache;
+    }
+    #endregion
     public void Awake()
     {
         SerializedObject tagManager = new SerializedObject
@@ -327,9 +421,9 @@ public class CustomTerrain : MonoBehaviour
     void AddTag(SerializedProperty tagsProp, string newTag)
     {
         bool found = false;
-        for (int i = 0; i < tagsProp.arraySize; i++)
+        for (int x = 0; x < tagsProp.arraySize; x++)
         {
-            SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
+            SerializedProperty t = tagsProp.GetArrayElementAtIndex(x);
             if (t.stringValue.Equals(newTag)) { found = true; break; }
         }
 

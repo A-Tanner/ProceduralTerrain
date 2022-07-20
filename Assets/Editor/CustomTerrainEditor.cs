@@ -49,6 +49,7 @@ public class CustomTerrainEditor : Editor
     bool showVoronoi = false;
     bool showSine = false;
     bool showMpd = false;
+    bool showSmooth = false;
 
     //Editor fields
     //Terrain from image
@@ -246,7 +247,8 @@ public class CustomTerrainEditor : Editor
         //TODO add more generation methods
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         #endregion
-
+        if (GUILayout.Button("Smooth"))
+            terrain.AdjacencyAverage();
         if (GUILayout.Button("Reset Terrain"))
             terrain.ResetTerrain();
 
