@@ -397,6 +397,13 @@ MonoBehaviour:
   mpdDisplacementFactor: 0.01
   mpdUpperBoundsRatio: 1
   mpdLowerBoundsRatio: 1
+  terrainTextures:
+  - texture: {fileID: 2800000, guid: 858e483d613d848cb935156b41553e4d, type: 3}
+    minHeight: 0
+    maxHeight: 0.2
+    offset: {x: 0, y: 0}
+    size: {x: 15, y: 15}
+    remove: 0
 --- !u!154 &1153841636
 TerrainCollider:
   m_ObjectHideFlags: 0

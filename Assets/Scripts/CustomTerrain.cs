@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using ProceduralTerrain;
 
 [ExecuteInEditMode]
 public class CustomTerrain : MonoBehaviour
@@ -38,6 +39,12 @@ public class CustomTerrain : MonoBehaviour
     public float mpdDisplacementFactor = 0.01f;
     public float mpdUpperBoundsRatio = 1.0f;
     public float mpdLowerBoundsRatio = 1.0f;
+    //Terrain Layers
+    public List<TerrainTexture> terrainTextures = new()
+    {
+        new TerrainTexture()
+    };
+
     public void ResetTerrain()
     {
         float[,] heightMap = new float[terrainData.heightmapResolution, terrainData.heightmapResolution];
@@ -324,6 +331,78 @@ public class CustomTerrain : MonoBehaviour
 
         terrainData.SetHeights(0, 0, heightMap);
         additive = additiveCache;
+    }
+    #endregion
+    #region TerrainTextures
+    public void AddNewTexture()
+    {
+        terrainTextures.Add(new TerrainTexture());
+    }
+
+    public void RemoveTextures()
+    {
+        List<TerrainTexture> keptTextures = new List<TerrainTexture>();
+
+        for (int i = 0; i < terrainTextures.Count; i++)
+        {
+            if (!terrainTextures[i].remove)
+            {
+                keptTextures.Add(terrainTextures[i]);
+            }
+        }
+        terrainTextures = keptTextures;
+
+        if (terrainTextures.Count == 0)
+        {
+            terrainTextures.Add(new TerrainTexture());
+        }
+    }
+
+    public void ApplyTerrainTextures()
+    {
+        TerrainLayer[] layers = new TerrainLayer[terrainTextures.Count];
+        int index = 0;
+        foreach(TerrainTexture t in terrainTextures)
+        {
+            layers[index] = new TerrainLayer();
+            layers[index].diffuseTexture = t.texture;
+            layers[index].diffuseTexture.Apply(true);
+            layers[index].tileOffset = t.offset;
+            layers[index].tileSize = t.size;
+            string path = "Assets/TerrainLayers/New Terrain Layer " + index + ".terrainlayer";
+            AssetDatabase.CreateAsset(layers[index], path);
+            index++;
+            Selection.activeObject = this.gameObject;
+        }
+        terrainData.terrainLayers = layers;
+
+        float[,] heightMap = terrainData.GetHeights(0, 0,terrainData.heightmapResolution, terrainData.heightmapResolution);
+        float[,,] textureLayerData = new float[terrainData.alphamapWidth,
+            terrainData.alphamapHeight,
+            terrainData.alphamapLayers];
+        for ( int y = 0; y < terrainData.alphamapHeight; y++)
+        {
+            for (int x = 0; x < terrainData.alphamapWidth; x++)
+            {
+                float[] layer = new float[terrainData.alphamapLayers];
+                for (int i = 0; i < terrainTextures.Count; i++)
+                {
+                    float heightStart = terrainTextures[i].minHeight;
+                    float heightStop = terrainTextures[i].maxHeight;
+                    if ((heightMap[x,y] >= heightStart && heightMap[x,y] <= heightStop))
+                    {
+                        layer[i] = 1;
+                    }
+                }
+                Utils.NormalizeVector(layer);
+                for (int j = 0; j < terrainTextures.Count; j++)
+                {
+                    textureLayerData[x, y, j] = layer[j];
+                }
+            }
+        }
+
+        terrainData.SetAlphamaps(0,0,textureLayerData);
     }
     #endregion
     public void Awake()

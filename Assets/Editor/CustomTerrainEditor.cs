@@ -1,3 +1,4 @@
+using EditorGUITable;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -41,6 +42,11 @@ public class CustomTerrainEditor : Editor
     SerializedProperty mpdUpperBoundsRatio;
     SerializedProperty mpdLowerBoundsRatio;
 
+    //Texture
+    SerializedProperty terrainTextures;
+
+    //Tables
+    GUITableState textureTable;
 
     //Fold outs
     bool showRandom = false;
@@ -49,7 +55,7 @@ public class CustomTerrainEditor : Editor
     bool showVoronoi = false;
     bool showSine = false;
     bool showMpd = false;
-    bool showSmooth = false;
+    bool showTextures = false;
 
     //Editor fields
     //Terrain from image
@@ -93,7 +99,8 @@ public class CustomTerrainEditor : Editor
         mpdUpperBoundsRatio = serializedObject.FindProperty("mpdUpperBoundsRatio");
         mpdLowerBoundsRatio = serializedObject.FindProperty("mpdLowerBoundsRatio");
 
-
+        textureTable = new GUITableState("textureTable");
+        terrainTextures = serializedObject.FindProperty("terrainTextures");
 
 
     }
@@ -242,6 +249,28 @@ public class CustomTerrainEditor : Editor
             {
                 terrain.TerrainFromMpd();
             }
+        }
+        #endregion
+        #region Textures
+        showTextures = EditorGUILayout.Foldout(showTextures, "Texture Layers");
+        if (showTextures)
+        {
+            textureTable = GUITableLayout.DrawTable(textureTable, serializedObject.FindProperty("terrainTextures"));
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("+"))
+            {
+                terrain.AddNewTexture();
+            }
+            if (GUILayout.Button("-"))
+            {
+                terrain.RemoveTextures();
+            }
+            EditorGUILayout.EndHorizontal();
+            if (GUILayout.Button("Apply Textures"))
+            {
+                terrain.ApplyTerrainTextures();
+            }
+        
         }
         #endregion
         //TODO add more generation methods
