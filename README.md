@@ -6,7 +6,7 @@ Consists of a script with multiple generation methods, intended to be applied to
 
 The generational methods are accessed in the editor via a custom UI, and are all highly paramaterized.
 
-##How to run
+## How to run
 
 1. Pull files into an empty folder
 2. Open this folder with the Unity Editor
