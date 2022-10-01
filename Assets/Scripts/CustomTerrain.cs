@@ -358,6 +358,25 @@ public class CustomTerrain : MonoBehaviour
         }
     }
 
+    //Uses an edge detection process to generate a vector
+    //representing the steepness of a point compared to it's neighbors.
+    //1.4 is the theoretical maximum steepness ( magnitude of (1,1) )
+    float GetSteepness(float[,] heightmap, int x, int y)
+    {
+        float h = heightmap[x, y];
+        int nextX = x + 1;
+        int nextY = y + 1;
+
+        if (nextX > terrainData.alphamapWidth-1) nextX = x - 1;
+        if (nextY > terrainData.alphamapHeight-1) nextY = y - 1;
+
+        float dx = heightmap[nextX, y] - h;
+        float dy = heightmap[x, nextY] - h;
+
+        Vector2 gradient = new Vector2(dx, dy);
+        return gradient.magnitude;
+    }
+
     public void ApplyTerrainTextures()
     {
         TerrainLayer[] layers = new TerrainLayer[terrainTextures.Count];
@@ -385,13 +404,22 @@ public class CustomTerrain : MonoBehaviour
             for (int x = 0; x < terrainData.alphamapWidth; x++)
             {
                 float[] layer = new float[terrainData.alphamapLayers];
+
                 for (int i = 0; i < terrainTextures.Count; i++)
                 {
-                    float heightStart = terrainTextures[i].minHeight;
-                    float heightStop = terrainTextures[i].maxHeight;
-                    if ((heightMap[x,y] >= heightStart && heightMap[x,y] <= heightStop))
+                    float offset = Mathf.PerlinNoise(x * terrainTextures[i].noiseVelocity, y * terrainTextures[i].noiseVelocity) * terrainTextures[i].noiseScale;
+                    float heightStart = terrainTextures[i].minHeight - offset;
+                    float heightStop = terrainTextures[i].maxHeight + offset;
+                    float steepness = GetSteepness(heightMap, x, y);
+                    Mathf.Clamp(heightStop, 0, 1);
+                    if ((heightMap[x,y] >= heightStart && heightMap[x,y] <= heightStop &&
+                         terrainTextures[i].CheckSlope(steepness)))
+                    
                     {
                         layer[i] = 1;
+                    } else
+                    {
+                        ;//Debug.Log("oops");
                     }
                 }
                 Utils.NormalizeVector(layer);

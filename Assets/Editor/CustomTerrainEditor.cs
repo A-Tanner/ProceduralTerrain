@@ -256,6 +256,7 @@ public class CustomTerrainEditor : Editor
         if (showTextures)
         {
             textureTable = GUITableLayout.DrawTable(textureTable, serializedObject.FindProperty("terrainTextures"));
+            GUILayout.Space(20);
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("+"))
             {

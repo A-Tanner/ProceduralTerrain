@@ -10,9 +10,18 @@ namespace ProceduralTerrain
         public Texture2D texture = null;
         public float minHeight = 0.0f;
         public float maxHeight = 1.0f;
+        public float minSlope = 0;
+        public float maxSlope = 1.5f;
         public Vector2 offset = new Vector2(0, 0);
         public Vector2 size = new Vector2 (50, 50);
+        public float noiseVelocity = 0.1f;
+        public float noiseScale = 0.08f;
         public bool remove = false;
+
+        public bool CheckSlope(float slope)
+        {
+            return (slope >= minSlope && slope <= maxSlope);
+        }
     }
     public static class Utils
     {
