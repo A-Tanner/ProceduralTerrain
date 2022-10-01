@@ -18,15 +18,27 @@ public class TextureCreatorWindow : EditorWindow
     bool seamless = false;
     bool enhancedView = false;
 
+
+    Texture2D previewTexture;
+
+
     [MenuItem("Window/Texture Creator")]
     public static void ShowWindow()
     {
         EditorWindow.GetWindow(typeof(TextureCreatorWindow));
     }
 
+    private void OnEnable()
+    {
+        previewTexture = new Texture2D(513, 513, TextureFormat.ARGB32, false);
+    }
+
     private void OnGUI()
     {
         GUILayout.Label("Settings", EditorStyles.boldLabel);
+
+        int wSize = (int)(EditorGUIUtility.currentViewWidth - 100);
+
         filename = EditorGUILayout.TextField("Texture Name", filename);
         perlinXScale = EditorGUILayout.Slider("X Scale", perlinXScale, 0, 0.01f);
         perlinYScale = EditorGUILayout.Slider("Y Scale", perlinXScale, 0, 0.01f);
@@ -38,6 +50,32 @@ public class TextureCreatorWindow : EditorWindow
         alpha = EditorGUILayout.Toggle("Has Alpha", alpha);
         seamless = EditorGUILayout.Toggle("Is Seamless", seamless);
         enhancedView = EditorGUILayout.Toggle("Enhanced View", enhancedView);
+
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button("Generate", GUILayout.Width(wSize))){
+
+        }
+
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        GUILayout.Label(previewTexture, GUILayout.Width(wSize), GUILayout.Height(wSize));
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button("Save", GUILayout.Width(wSize))){
+
+        }
+
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
     }
 
 }
