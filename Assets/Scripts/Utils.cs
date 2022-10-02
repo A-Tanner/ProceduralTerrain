@@ -118,5 +118,10 @@ namespace ProceduralTerrain
             }
         }
 
+        public static float Remap(float originalVal, float originalMin, float originalMax, float targetMin, float targetMax)
+        {
+            return (originalVal - originalMin) * (targetMax - targetMin) / (originalMax - originalMin) + targetMin;
+        }
+
     }
 }

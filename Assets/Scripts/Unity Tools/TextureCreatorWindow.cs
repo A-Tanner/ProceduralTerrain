@@ -16,9 +16,11 @@ public class TextureCreatorWindow : EditorWindow
     int perlinOctaves = 3;
     float perlinPersistance = 8.0f;
     float perlinHeightScale = 0.09f;
+    float minRemap = 0;
+    float maxRemap = 1;
     bool alpha = false;
     bool seamless = false;
-    bool enhancedView = false;
+    bool remap = false;
 
     int width = 513;
     int height = 513;
@@ -54,14 +56,28 @@ public class TextureCreatorWindow : EditorWindow
         perlinHeightScale = EditorGUILayout.Slider("Height Scale", perlinHeightScale,0,1);
         alpha = EditorGUILayout.Toggle("Has Alpha", alpha);
         seamless = EditorGUILayout.Toggle("Is Seamless", seamless);
-        enhancedView = EditorGUILayout.Toggle("Enhanced View", enhancedView);
+        remap = EditorGUILayout.Toggle("Remap range", remap);
+        if (remap)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(minRemap.ToString());
+            EditorGUILayout.MinMaxSlider(ref minRemap, ref maxRemap,0,1);
+            GUILayout.Label(maxRemap.ToString());
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+
+        float minValue, maxValue;
 
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
 
         if (GUILayout.Button("Generate", GUILayout.Width(wSize))){
             float pixelValue;
-            Color pixelColor;
+            Color pixelColor = Color.red;
+            minValue = 2;
+            maxValue = -1;
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -121,10 +137,29 @@ public class TextureCreatorWindow : EditorWindow
                         perlinXOffset,
                         perlinYOffset) * perlinHeightScale;
                     }
+                    if(minValue > pixelValue) minValue = pixelValue;
+                    if(maxValue < pixelValue) maxValue = pixelValue;
+
                     pixelColor = new Color(pixelValue, pixelValue, pixelValue, alpha ? pixelValue : 1);
                     previewTexture.SetPixel(x, y, pixelColor);
                 }
             }
+
+
+            if (remap)
+            {
+                for(int y = 0; y < height; y++)
+                {
+                    for(int x =0; x < width; x++)
+                    {
+                        float grayscaleValue = previewTexture.GetPixel(x, y).r;
+                        grayscaleValue = Utils.Remap(grayscaleValue, minValue, maxValue, minRemap, maxRemap);
+                        pixelColor.r=pixelColor.g=pixelColor.b=grayscaleValue;
+                        previewTexture.SetPixel(x, y, pixelColor);
+                    }
+                }
+            }
+
             previewTexture.Apply(false, false);
         }
 
