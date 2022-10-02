@@ -65,13 +65,55 @@ public class TextureCreatorWindow : EditorWindow
             {
                 for (int x = 0; x < width; x++)
                 {
-                    pixelValue = Utils.FractalBrownianMotion(y * perlinXScale,
-                    x * perlinYScale,
-                    perlinOctaves,
-                    perlinPersistance,
-                    perlinXOffset,
-                    perlinYOffset) * perlinHeightScale;
+                    if (seamless)
+                    {
+                        float u = (float)x / (float)width;
+                        float v = (float)y / (float)height;
 
+                        float noise00 = Utils.FractalBrownianMotion(y * perlinXScale,
+                        x * perlinYScale,
+                        perlinOctaves,
+                        perlinPersistance,
+                        perlinXOffset,
+                        perlinYOffset) * perlinHeightScale;
+
+                        float noise01 = Utils.FractalBrownianMotion(y * perlinXScale,
+                        x * perlinYScale,
+                        perlinOctaves,
+                        perlinPersistance,
+                        perlinXOffset+width,
+                        perlinYOffset) * perlinHeightScale;
+
+                        float noise10 = Utils.FractalBrownianMotion(y * perlinXScale,
+                        x * perlinYScale,
+                        perlinOctaves,
+                        perlinPersistance,
+                        perlinXOffset,
+                        perlinYOffset+height) * perlinHeightScale;
+
+                        float noise11 = Utils.FractalBrownianMotion(y * perlinXScale,
+                        x * perlinYScale,
+                        perlinOctaves,
+                        perlinPersistance,
+                        perlinXOffset+width,
+                        perlinYOffset+height) * perlinHeightScale;
+
+                        float noiseTotal = u * v * noise00 +
+                            (1-u) * v * noise01 +
+                            u * (1-v) * noise10 +
+                            (1-u) * (1-v) * noise11;
+                        pixelValue = noiseTotal;
+
+                    }
+                    else
+                    {
+                        pixelValue = Utils.FractalBrownianMotion(y * perlinXScale,
+                        x * perlinYScale,
+                        perlinOctaves,
+                        perlinPersistance,
+                        perlinXOffset,
+                        perlinYOffset) * perlinHeightScale;
+                    }
                     pixelColor = new Color(pixelValue, pixelValue, pixelValue, alpha ? pixelValue : 1);
                     previewTexture.SetPixel(x, y, pixelColor);
                 }
