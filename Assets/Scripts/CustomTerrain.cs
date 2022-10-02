@@ -103,8 +103,8 @@ public class CustomTerrain : MonoBehaviour
         {
             for (int y = 0; y < terrainData.heightmapResolution; y++)
             {
-                heightMap[x, y] += Utils.FractalBrownianMotion(y * perlinXScale,
-                    x * perlinYScale,
+                heightMap[x, y] += Utils.FractalBrownianMotion(x * perlinXScale,
+                    y * perlinYScale,
                     perlinOctaves,
                     perlinPersistance,
                     perlinXOffset,

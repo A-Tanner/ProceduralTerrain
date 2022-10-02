@@ -8,6 +8,7 @@ using System.IO;
 public class TextureCreatorWindow : EditorWindow
 {
     string filename = "proceduraltexture";
+    string saveDirectory = "/GeneratedTextures";
     float perlinXScale = 0.001f;
     float perlinYScale = 0.001f;
     int perlinXOffset = 0;
@@ -70,45 +71,51 @@ public class TextureCreatorWindow : EditorWindow
                         float u = (float)x / (float)width;
                         float v = (float)y / (float)height;
 
-                        float noise00 = Utils.FractalBrownianMotion(y * perlinXScale,
-                        x * perlinYScale,
+                        float noise00 = Utils.FractalBrownianMotion(x * perlinXScale,
+                        y * perlinYScale,
                         perlinOctaves,
                         perlinPersistance,
                         perlinXOffset,
                         perlinYOffset) * perlinHeightScale;
 
-                        float noise01 = Utils.FractalBrownianMotion(y * perlinXScale,
-                        x * perlinYScale,
-                        perlinOctaves,
-                        perlinPersistance,
-                        perlinXOffset+width,
-                        perlinYOffset) * perlinHeightScale;
-
-                        float noise10 = Utils.FractalBrownianMotion(y * perlinXScale,
-                        x * perlinYScale,
+                        float noise01 = Utils.FractalBrownianMotion((x + width) * perlinXScale,
+                        y * perlinYScale,
                         perlinOctaves,
                         perlinPersistance,
                         perlinXOffset,
-                        perlinYOffset+height) * perlinHeightScale;
+                        perlinYOffset) * perlinHeightScale;
 
-                        float noise11 = Utils.FractalBrownianMotion(y * perlinXScale,
-                        x * perlinYScale,
+                        float noise10 = Utils.FractalBrownianMotion(x * perlinXScale,
+                        (y + height) * perlinYScale,
                         perlinOctaves,
                         perlinPersistance,
-                        perlinXOffset+width,
-                        perlinYOffset+height) * perlinHeightScale;
+                        perlinXOffset,
+                        perlinYOffset) * perlinHeightScale;
+
+                        float noise11 = Utils.FractalBrownianMotion((x + width) * perlinXScale,
+                        (y + height) * perlinYScale,
+                        perlinOctaves,
+                        perlinPersistance,
+                        perlinXOffset,
+                        perlinYOffset) * perlinHeightScale;
 
                         float noiseTotal = u * v * noise00 +
                             (1-u) * v * noise01 +
                             u * (1-v) * noise10 +
                             (1-u) * (1-v) * noise11;
+
+                        //float mappedVal = (int)(256 * noiseTotal);
+                        //float r = Mathf.Clamp((int)noise00, 0, 256);
+                        //float g = Mathf.Clamp(mappedVal, 0, 255);
+
+                        //pixelValue = (r+g+g)/(3*255.0f);
                         pixelValue = noiseTotal;
 
                     }
                     else
                     {
-                        pixelValue = Utils.FractalBrownianMotion(y * perlinXScale,
-                        x * perlinYScale,
+                        pixelValue = Utils.FractalBrownianMotion(x * perlinXScale,
+                        y * perlinYScale,
                         perlinOctaves,
                         perlinPersistance,
                         perlinXOffset,
@@ -134,7 +141,9 @@ public class TextureCreatorWindow : EditorWindow
         GUILayout.FlexibleSpace();
 
         if (GUILayout.Button("Save", GUILayout.Width(wSize))){
-
+            byte[] bytes = previewTexture.EncodeToPNG();
+            System.IO.Directory.CreateDirectory(Application.dataPath + saveDirectory);
+            File.WriteAllBytes(Application.dataPath + saveDirectory + "/"+ filename + ".png", bytes);
         }
 
         GUILayout.FlexibleSpace();
