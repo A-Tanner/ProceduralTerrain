@@ -15,13 +15,17 @@ The generational methods are accessed in the editor via a custom UI, and are all
 ## Highlights
 
 Many generational options
+
 ![image](https://user-images.githubusercontent.com/40047765/193483680-12c45d06-f097-4c06-9010-8914501502c4.png)
 
 Multi-texture, with height and slope dependant texture options
+
 ![image](https://user-images.githubusercontent.com/40047765/193483712-7f65b569-9df3-4920-81c0-736096627b1c.png)
 
 Export/Import heightmaps
+
 ![image](https://user-images.githubusercontent.com/40047765/193503613-c089bfa9-59b9-4e76-9cd5-69ffbe45ec86.png)
 
 Noise Utility
+
 ![image](https://user-images.githubusercontent.com/40047765/193503777-3fb09424-54bf-408b-8f30-031edcb5914a.png)
