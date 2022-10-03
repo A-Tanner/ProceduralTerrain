@@ -417,10 +417,7 @@ public class CustomTerrain : MonoBehaviour
                     
                     {
                         layer[i] = 1;
-                    } else
-                    {
-                        ;//Debug.Log("oops");
-                    }
+                    } 
                 }
                 Utils.NormalizeVector(layer);
                 for (int j = 0; j < terrainTextures.Count; j++)
@@ -481,15 +478,25 @@ public class CustomTerrain : MonoBehaviour
             newTagProp.stringValue = newTag;
         }
     }
-    // Start is called before the first frame update
-    void Start()
+
+    public Texture2D GenerateImprint()
     {
+        bool additiveHolder = additive;
+        additive = true;
+        float[,] heightMap = GetInitialHeights();
+        Texture2D imprint = new Texture2D(heightMap.GetLength(0),heightMap.GetLength(1), TextureFormat.RGBA32, false);
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        for(int y = 0; y < imprint.height;y++)
+        {
+            for (int x = 0; x < imprint.width;x++)
+            {
+                float grayscale = heightMap[x,y];
+                imprint.SetPixel(x, y, new Color(grayscale, grayscale, grayscale,1));
+               
+            }
+        }
+        additive = additiveHolder;
+        imprint.Apply(false, false);
+        return imprint;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System.IO;
 
 [CustomEditor(typeof(CustomTerrain))] //links this script with the editor of CustomTerrain
 [CanEditMultipleObjects]
@@ -45,6 +46,9 @@ public class CustomTerrainEditor : Editor
     //Texture
     SerializedProperty terrainTextures;
 
+    //Heightmap
+    Texture2D terrainImprint;
+
     //Tables
     GUITableState textureTable;
 
@@ -56,6 +60,7 @@ public class CustomTerrainEditor : Editor
     bool showSine = false;
     bool showMpd = false;
     bool showTextures = false;
+    bool showImprint = false;
 
     //Editor fields
     //Terrain from image
@@ -102,6 +107,7 @@ public class CustomTerrainEditor : Editor
         textureTable = new GUITableState("textureTable");
         terrainTextures = serializedObject.FindProperty("terrainTextures");
 
+        terrainImprint = new(513,513);
 
     }
 
@@ -281,15 +287,29 @@ public class CustomTerrainEditor : Editor
             terrain.AdjacencyAverage();
         if (GUILayout.Button("Reset Terrain"))
             terrain.ResetTerrain();
+        #region Imprint
+        showImprint = EditorGUILayout.Foldout(showImprint, "View Heightmap");
+        if (showImprint)
+        {
+            if (GUILayout.Button("Refresh Map"))
+            {
+                terrainImprint = terrain.GenerateImprint();
+            }
+            
+            GUILayout.Label(terrainImprint);
 
+            if (GUILayout.Button("Save"))
+            {
+                byte[] bytes = terrainImprint.EncodeToPNG();
+                System.IO.Directory.CreateDirectory(Application.dataPath + "/SavedHeightmaps");
+                File.WriteAllBytes(Application.dataPath + "/SavedHeightmaps/heightmap.png", bytes);
+            }
+        }
+        #endregion
 
 
         serializedObject.ApplyModifiedProperties();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
-    }
 }
