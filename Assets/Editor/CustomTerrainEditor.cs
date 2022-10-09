@@ -296,7 +296,7 @@ public class CustomTerrainEditor : Editor
                 terrainImprint = terrain.GenerateImprint();
             }
             
-            GUILayout.Label(terrainImprint);
+            GUILayout.Label(terrainImprint, GUILayout.Height(EditorGUIUtility.currentViewWidth));
 
             if (GUILayout.Button("Save"))
             {
