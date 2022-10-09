@@ -30,7 +30,7 @@ Noise Utility
 
 ![image](https://user-images.githubusercontent.com/40047765/193503777-3fb09424-54bf-408b-8f30-031edcb5914a.png)
 
-##Credits
+## Credits
 
 Textures and Vegetation:
 https://holistic3d.com/resources/
