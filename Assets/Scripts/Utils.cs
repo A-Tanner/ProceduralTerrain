@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ProceduralTerrain
 {
+
     [System.Serializable]
     public class TerrainTexture
     {
@@ -22,6 +23,17 @@ namespace ProceduralTerrain
         {
             return (slope >= minSlope && slope <= maxSlope);
         }
+    }
+
+    [System.Serializable]
+    public class VegetationLayer
+    {
+        public GameObject mesh;
+        public float minHeight = 0.0f;
+        public float maxHeight = 1.0f;
+        public float minSlope = 0;
+        public float maxSlope = 1.5f;
+        public bool remove = false;
     }
     public static class Utils
     {

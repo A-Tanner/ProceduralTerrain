@@ -46,11 +46,17 @@ public class CustomTerrainEditor : Editor
     //Texture
     SerializedProperty terrainTextures;
 
+    //Vegetation
+    SerializedProperty vegetationLayers;
+    SerializedProperty maxVeg;
+    SerializedProperty vegSpacing;
+
     //Heightmap
     Texture2D terrainImprint;
 
     //Tables
     GUITableState textureTable;
+    GUITableState vegetationTable;
 
     //Fold outs
     bool showRandom = false;
@@ -60,6 +66,7 @@ public class CustomTerrainEditor : Editor
     bool showSine = false;
     bool showMpd = false;
     bool showTextures = false;
+    bool showVegetation = false;
     bool showImprint = false;
 
     //Editor fields
@@ -106,6 +113,11 @@ public class CustomTerrainEditor : Editor
 
         textureTable = new GUITableState("textureTable");
         terrainTextures = serializedObject.FindProperty("terrainTextures");
+
+        vegetationTable = new GUITableState("vegetationTable");
+        vegetationLayers = serializedObject.FindProperty("vegetationLayers");
+        maxVeg = serializedObject.FindProperty("maxVeg");
+        vegSpacing = serializedObject.FindProperty("vegSpacing");
 
         terrainImprint = new(513,513);
 
@@ -278,6 +290,30 @@ public class CustomTerrainEditor : Editor
                 terrain.ApplyTerrainTextures();
             }
         
+        }
+        #endregion
+        #region Vegetation
+        showVegetation = EditorGUILayout.Foldout(showVegetation, "Vegetation");
+        if (showVegetation)
+        {
+            EditorGUILayout.IntSlider(maxVeg, 0, 20000);
+            EditorGUILayout.Slider(vegSpacing, 0.01f, 50);
+            vegetationTable = GUITableLayout.DrawTable(vegetationTable, vegetationLayers);
+            GUILayout.Space(20);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("+"))
+            {
+                terrain.AddVegetationLayer();
+            }
+            if (GUILayout.Button("-"))
+            {
+                terrain.RemoveVegetationLayers();
+            }
+            EditorGUILayout.EndHorizontal();
+            if(GUILayout.Button("Apply Vegetation"))
+            {
+                terrain.PlantVegetation();
+            }
         }
         #endregion
         //TODO add more generation methods

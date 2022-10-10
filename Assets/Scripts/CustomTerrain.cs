@@ -44,6 +44,10 @@ public class CustomTerrain : MonoBehaviour
     {
         new TerrainTexture()
     };
+    //Vegetation
+    public List<VegetationLayer> vegetationLayers = new() { new VegetationLayer()};
+    public int maxVeg = 5000;
+    public float vegSpacing = 5.0f;
 
     public void ResetTerrain()
     {
@@ -428,6 +432,37 @@ public class CustomTerrain : MonoBehaviour
         }
 
         terrainData.SetAlphamaps(0,0,textureLayerData);
+    }
+    #endregion
+    #region Vegetation
+    public void PlantVegetation() { }
+    public void AddVegetationLayer() { vegetationLayers.Add(new VegetationLayer());  }
+    public void RemoveVegetationLayers()
+    {
+        List<VegetationLayer> savedLayers = new();
+        for (int i = 0; i < vegetationLayers.Count; i++)
+        {
+            if (!vegetationLayers[i].remove)
+            {
+                savedLayers.Add(vegetationLayers[i]);
+            }
+        }
+
+        if (savedLayers.Count == 0)
+        {
+            savedLayers.Add(new VegetationLayer());
+        }
+
+        vegetationLayers = savedLayers;
+    }
+    public void ClearVegetationLayers()
+    {
+        foreach(VegetationLayer layer in vegetationLayers)
+        {
+            layer.remove = true;
+        }
+
+        RemoveVegetationLayers();
     }
     #endregion
     public void Awake()
