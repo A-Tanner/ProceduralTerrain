@@ -435,7 +435,44 @@ public class CustomTerrain : MonoBehaviour
     }
     #endregion
     #region Vegetation
-    public void PlantVegetation() { }
+    public void PlantVegetation() 
+    {
+        TreePrototype[] treePrototypes;
+        treePrototypes = new TreePrototype[vegetationLayers.Count];
+        for (int i = 0; i < vegetationLayers.Count; i++)
+        {
+            treePrototypes[i] = new TreePrototype();
+            treePrototypes[i].prefab = vegetationLayers[i].mesh;
+        }
+        terrainData.treePrototypes = treePrototypes;
+
+        List<TreeInstance> vegetation = new();
+        for (int z = 0; z < terrainData.size.z; z++)
+        {
+            for (int x = 0; x < terrainData.size.x; x++)
+            {
+                for (int prototype = 0; prototype < terrainData.treePrototypes.Length; prototype++)
+                {
+                    float height = terrainData.GetHeight(x, z) / terrainData.size.y;
+                    TreeInstance instance = new();
+                    instance.position = new Vector3(x / terrainData.size.x, 
+                                                    height, 
+                                                    z / terrainData.size.z);
+                    instance.rotation = UnityEngine.Random.Range(0, 360);
+                    instance.prototypeIndex = prototype;
+                    instance.lightmapColor = Color.white;
+                    instance.heightScale = 0.95f;
+                    instance.widthScale = 0.95f;
+
+                    vegetation.Add(instance);
+                    if (vegetation.Count >= maxVeg) goto LOOPEND;
+
+                }
+            }
+        }
+    LOOPEND:
+        terrainData.treeInstances = vegetation.ToArray();
+    }
     public void AddVegetationLayer() { vegetationLayers.Add(new VegetationLayer());  }
     public void RemoveVegetationLayers()
     {
