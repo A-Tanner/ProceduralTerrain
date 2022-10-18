@@ -297,7 +297,7 @@ public class CustomTerrainEditor : Editor
         if (showVegetation)
         {
             EditorGUILayout.IntSlider(maxVeg, 0, 20000);
-            EditorGUILayout.Slider(vegSpacing, 0.01f, 50);
+            EditorGUILayout.IntSlider(vegSpacing, 1, 50);
             vegetationTable = GUITableLayout.DrawTable(vegetationTable, vegetationLayers);
             GUILayout.Space(20);
             GUILayout.BeginHorizontal();

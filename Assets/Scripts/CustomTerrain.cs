@@ -47,7 +47,7 @@ public class CustomTerrain : MonoBehaviour
     //Vegetation
     public List<VegetationLayer> vegetationLayers = new() { new VegetationLayer()};
     public int maxVeg = 5000;
-    public float vegSpacing = 5.0f;
+    public int vegSpacing = 5;
 
     public void ResetTerrain()
     {
@@ -447,22 +447,29 @@ public class CustomTerrain : MonoBehaviour
         terrainData.treePrototypes = treePrototypes;
 
         List<TreeInstance> vegetation = new();
-        for (int z = 0; z < terrainData.size.z; z++)
+        for (int z = 0; z < terrainData.size.z; z += vegSpacing)
         {
-            for (int x = 0; x < terrainData.size.x; x++)
+            for (int x = 0; x < terrainData.size.x; x += vegSpacing)
             {
                 for (int prototype = 0; prototype < terrainData.treePrototypes.Length; prototype++)
                 {
-                    float height = terrainData.GetHeight(x, z) / terrainData.size.y;
+                    int placementX = x + Random.Range(0, vegSpacing / 2);
+                    int placementZ = z + Random.Range(0, vegSpacing / 2);
+                    float placementY = terrainData.GetHeight(placementX,placementZ)/terrainData.size.y;
                     TreeInstance instance = new();
-                    instance.position = new Vector3(x / terrainData.size.x, 
-                                                    height, 
-                                                    z / terrainData.size.z);
-                    instance.rotation = UnityEngine.Random.Range(0, 360);
-                    instance.prototypeIndex = prototype;
-                    instance.lightmapColor = Color.white;
-                    instance.heightScale = 0.95f;
-                    instance.widthScale = 0.95f;
+
+                    if (terrainData.heightmapResolution - placementX > 2 && terrainData.heightmapResolution -placementZ > 2) //Without this, there is abnormal grouping along two edges of the terrain
+                    {
+                        instance.position = new Vector3((float)placementX / terrainData.heightmapResolution,
+                                                        placementY,
+                                                        (float)placementZ / terrainData.heightmapResolution);
+                        instance.rotation = UnityEngine.Random.Range(0, 360);
+                        instance.prototypeIndex = prototype;
+                        instance.color = Color.white;
+                        instance.lightmapColor = Color.white;
+                        instance.heightScale = 0.95f;
+                        instance.widthScale = 0.95f;
+                    }
 
                     vegetation.Add(instance);
                     if (vegetation.Count >= maxVeg) goto LOOPEND;
@@ -472,6 +479,8 @@ public class CustomTerrain : MonoBehaviour
         }
     LOOPEND:
         terrainData.treeInstances = vegetation.ToArray();
+
+        //terrainData.SetHeights(0, 0, terrainData.GetHeights(0,0,terrainData.heightmapResolution, terrainData.heightmapResolution));
     }
     public void AddVegetationLayer() { vegetationLayers.Add(new VegetationLayer());  }
     public void RemoveVegetationLayers()
