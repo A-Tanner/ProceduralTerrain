@@ -459,14 +459,14 @@ MonoBehaviour:
     noiseScale: 0
     remove: 0
   vegetationLayers:
-  - mesh: {fileID: -927199367670048503, guid: 10337ad1bd11abca11002b7b44295342, type: 3}
+  - mesh: {fileID: -927199367670048503, guid: 8c7d35afbd119bca11002b7b44295342, type: 3}
     minHeight: 0
     maxHeight: 1
     minSlope: 0
     maxSlope: 1.5
     remove: 0
-  maxVeg: 5000
-  vegSpacing: 5
+  maxVeg: 20000
+  vegSpacing: 18
 --- !u!154 &1153841636
 TerrainCollider:
   m_ObjectHideFlags: 0
@@ -489,13 +489,13 @@ Terrain:
   serializedVersion: 6
   m_TerrainData: {fileID: 15600000, guid: 91ef555ddef8ea1499878a823e38b6ff, type: 2}
   m_TreeDistance: 5000
-  m_TreeBillboardDistance: 50
-  m_TreeCrossFadeLength: 5
-  m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 80
+  m_TreeBillboardDistance: 215
+  m_TreeCrossFadeLength: 200
+  m_TreeMaximumFullLODCount: 10000
+  m_DetailObjectDistance: 250
   m_DetailObjectDensity: 1
   m_HeightmapPixelError: 5
-  m_SplatMapDistance: 1000
+  m_SplatMapDistance: 1169
   m_HeightmapMaximumLOD: 0
   m_ShadowCastingMode: 2
   m_DrawHeightmap: 1

@@ -447,19 +447,20 @@ public class CustomTerrain : MonoBehaviour
         terrainData.treePrototypes = treePrototypes;
 
         List<TreeInstance> vegetation = new();
-        for (int z = 0; z < terrainData.size.z; z += vegSpacing)
+        for (int z = 0; z < terrainData.heightmapResolution; z += vegSpacing)
         {
-            for (int x = 0; x < terrainData.size.x; x += vegSpacing)
+            for (int x = 0; x < terrainData.heightmapResolution; x += vegSpacing)
             {
                 for (int prototype = 0; prototype < terrainData.treePrototypes.Length; prototype++)
                 {
-                    int placementX = x + Random.Range(0, vegSpacing / 2);
-                    int placementZ = z + Random.Range(0, vegSpacing / 2);
+                    int maxDisplacement = vegSpacing / 4;
+                    int placementX = x + Random.Range(-maxDisplacement, maxDisplacement);
+                    int placementZ = z + Random.Range(-maxDisplacement, maxDisplacement);
                     float placementY = terrainData.GetHeight(placementX,placementZ)/terrainData.size.y;
                     TreeInstance instance = new();
 
-                    if (terrainData.heightmapResolution - placementX > 2 && terrainData.heightmapResolution -placementZ > 2) //Without this, there is abnormal grouping along two edges of the terrain
-                    {
+                    //if (terrainData.heightmapResolution - placementX > 2 && terrainData.heightmapResolution -placementZ > 2) //Without this, there is abnormal grouping along two edges of the terrain
+                    //{
                         instance.position = new Vector3((float)placementX / terrainData.heightmapResolution,
                                                         placementY,
                                                         (float)placementZ / terrainData.heightmapResolution);
@@ -469,7 +470,7 @@ public class CustomTerrain : MonoBehaviour
                         instance.lightmapColor = Color.white;
                         instance.heightScale = 0.95f;
                         instance.widthScale = 0.95f;
-                    }
+                    //}
 
                     vegetation.Add(instance);
                     if (vegetation.Count >= maxVeg) goto LOOPEND;
